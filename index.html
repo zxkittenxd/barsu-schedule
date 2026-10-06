@@ -121,6 +121,7 @@ body{
 .menu-sep{height:1px;background:var(--glass-border);margin:8px 4px}
 .menu-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:2px 0 8px 6px}
 .accent-row{display:flex;gap:8px;padding:6px 10px;flex-wrap:wrap}
+.design-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px 10px}
 .accent{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s,border-color .2s;background:linear-gradient(135deg,var(--a),var(--a2))}
 .accent:hover{transform:scale(1.15)}
 .accent.on{border-color:var(--text)}
@@ -504,7 +505,7 @@ footer a:hover{color:var(--accent)}
     </div>
     <div class="menu-sep"></div>
     <div class="menu-label">Дизайн</div>
-    <div class="accent-row">
+    <div class="design-row">
       <button class="mini-btn design-btn" data-t="dark" title="Liquid glass тёмная">🌟 Liquid dark</button>
       <button class="mini-btn design-btn" data-t="light" title="Liquid glass светлая">☀️ Liquid light</button>
       <button class="mini-btn design-btn" data-t="material-light" title="Material UI светлая">☀️ Material</button>
@@ -1200,6 +1201,15 @@ function attachSegDrag(){
   };
   seg.addEventListener('pointerup',finish);
   seg.addEventListener('pointercancel',finish);
+  seg.addEventListener('click', e=>{
+    if(segDragSuppress)return;
+    const m=metrics(); if(!m.length)return;
+    const segBox=seg.getBoundingClientRect();
+    const cx=e.clientX-segBox.left;
+    let best=m[0],bd=1e9;
+    m.forEach(it=>{const d=Math.abs(cx-(it.left+it.w/2));if(d<bd){bd=d;best=it;}});
+    selectDayByEl(best.el);
+  });
 }
 function renderDays(){
   const seg=document.getElementById('daySeg');
