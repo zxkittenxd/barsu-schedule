@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Расписание БарГУ — все группы</title>
+<meta name="description" content="Расписание занятий всех групп БарГУ (Барановичский государственный университет). Живые данные с официального сайта rasp.barsu.by.">
+<meta name="theme-color" content="#05070d">
+<meta property="og:title" content="Расписание БарГУ — все группы">
+<meta property="og:description" content="Расписание занятий всех групп БарГУ в стиле liquid glass. Данные подхватываются с rasp.barsu.by.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236ea8ff'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='4' width='56' height='56' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='bold' font-size='22' fill='white' text-anchor='middle'%3EБГ%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#05070d; --text:#f2f5fb; --muted:rgba(242,245,251,.60); --faint:rgba(242,245,251,.38);
+  --glass:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+  --glass-strong:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  --glass-border:rgba(255,255,255,.13); --glass-edge:rgba(255,255,255,.22);
+  --glass-shadow:0 10px 40px rgba(0,0,0,.45);
+  --specular:rgba(255,255,255,.13);
+  --accent:#7fb0ff; --accent2:#c084fc;
+  --blob-op:.55; --blob-blend:screen; --grain-op:.055;
+  --seg-bg:rgba(255,255,255,.032); --seg-thumb:rgba(255,255,255,.085);
+  --chip:rgba(255,255,255,.055);
+  --radius:24px;
+}
+[data-theme="light"]{
+  --bg:#eef1f8; --text:#0c1322; --muted:rgba(12,19,34,.62); --faint:rgba(12,19,34,.40);
+  --glass:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.38));
+  --glass-strong:linear-gradient(135deg,rgba(255,255,255,.8),rgba(255,255,255,.5));
+  --glass-border:rgba(255,255,255,.75); --glass-edge:rgba(255,255,255,.95);
+  --glass-shadow:0 10px 34px rgba(30,50,100,.14);
+  --specular:rgba(255,255,255,.5);
+  --blob-op:.5; --blob-blend:normal; --grain-op:.03;
+  --seg-bg:rgba(255,255,255,.3); --seg-thumb:rgba(255,255,255,.55);
+  --chip:rgba(255,255,255,.48);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; transition:background .5s,color .5s;
+}
+::selection{background:rgba(127,176,255,.35)}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--bg)}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:var(--blob-op);mix-blend-mode:var(--blob-blend);will-change:transform;animation:drift var(--dur,34s) ease-in-out infinite alternate}
+.b1{width:52vw;height:52vw;left:-14vw;top:-16vw;background:radial-gradient(circle at 30% 30%,#3b6cff,#1e3a8a 70%);--dur:38s}
+.b2{width:44vw;height:44vw;right:-10vw;top:-8vw;background:radial-gradient(circle at 60% 40%,#a855f7,#581c87 70%);--dur:44s;animation-delay:-8s}
+.b3{width:40vw;height:40vw;left:22vw;top:38vh;background:radial-gradient(circle at 50% 50%,#22d3ee,#0e7490 70%);--dur:50s;animation-delay:-16s}
+.b4{width:34vw;height:34vw;right:2vw;top:64vh;background:radial-gradient(circle at 40% 60%,#f472b6,#831843 70%);--dur:41s;animation-delay:-24s}
+.b5{width:26vw;height:26vw;left:-6vw;bottom:-10vw;background:radial-gradient(circle at 50% 50%,#34d399,#064e3b 70%);--dur:47s;animation-delay:-12s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(6vw,-4vh) scale(1.12)}66%{transform:translate(-4vw,5vh) scale(.94)}100%{transform:translate(3vw,2vh) scale(1.05)}}
+[data-theme="light"] .blob{filter:blur(100px) saturate(1.3) brightness(1.45);opacity:.42}
+[data-theme="light"] .toast{box-shadow:0 14px 40px rgba(30,50,100,.25)}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--grain-op);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");}
+.glass{
+  position:relative;background:var(--glass);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);
+  border:1px solid var(--glass-border);border-radius:var(--radius);
+  box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-edge);
+  overflow:hidden;
+}
+.glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(560px circle at var(--mx,50%) var(--my,-200px),var(--specular),transparent 42%);
+  opacity:0;transition:opacity .35s ease;z-index:0;
+}
+.glass:hover::before{opacity:1}
+.glass>*{position:relative;z-index:1}
+.topbar{
+  position:sticky;top:12px;z-index:50;margin:12px auto 0;max-width:1120px;width:calc(100% - 24px);
+  display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:20px;
+}
+.logo{width:40px;height:40px;border-radius:13px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,#6ea8ff,#c084fc);color:#fff;font-weight:800;font-size:14px;
+  box-shadow:0 4px 18px rgba(110,140,255,.45),inset 0 1px 0 rgba(255,255,255,.5);letter-spacing:.5px}
+.topbar .tt{font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .ts{font-size:11px;color:var(--muted);white-space:nowrap;max-width:340px;overflow:hidden;text-overflow:ellipsis}
+.tb-meta{min-width:0;overflow:hidden}
+.topbar .spacer{flex:1}
+.icon-btn{
+  width:40px;height:40px;border-radius:13px;border:1px solid var(--glass-border);cursor:pointer;
+  background:var(--chip);color:var(--text);display:grid;place-items:center;flex:none;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s;
+}
+.icon-btn:hover{background:var(--seg-thumb);border-color:var(--glass-edge);transform:translateY(-2px)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#refreshBtn.spinning svg{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.group-btn{
+  display:flex;align-items:center;gap:9px;padding:9px 15px;border-radius:14px;cursor:pointer;
+  border:1px solid var(--glass-border);background:var(--chip);color:var(--text);font:inherit;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);flex:none;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s;
+}
+.group-btn:hover{background:var(--seg-thumb);border-color:var(--glass-edge);transform:translateY(-2px)}
+.group-btn:active{transform:scale(.96)}
+.group-btn b{font-size:14px;font-weight:800;letter-spacing:.02em}
+.group-btn svg{width:12px;height:12px;stroke:var(--muted);fill:none;stroke-width:2.4}
+.status-chip{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  background:var(--chip);border:1px solid var(--glass-border);color:var(--muted);white-space:nowrap;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;background:#64748b;position:relative}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid currentColor;opacity:0}
+.status-chip[data-s="live"]{color:#4ade80}.status-chip[data-s="live"] .dot{background:#4ade80;box-shadow:0 0 10px #4ade80}
+.status-chip[data-s="live"] .dot::after{animation:pulse 1.8s ease-out infinite;color:#4ade80}
+.status-chip[data-s="cache"]{color:#fbbf24}.status-chip[data-s="cache"] .dot{background:#fbbf24;box-shadow:0 0 10px #fbbf24}
+.status-chip[data-s="snap"]{color:#7fb0ff}.status-chip[data-s="snap"] .dot{background:#7fb0ff;box-shadow:0 0 10px #7fb0ff}
+.status-chip[data-s="busy"]{color:#c084fc}.status-chip[data-s="busy"] .dot{background:#c084fc;animation:blink .8s infinite}
+.status-chip[data-s="load"]{color:#7fb0ff}.status-chip[data-s="load"] .dot{background:#7fb0ff;animation:blink .8s infinite}
+@keyframes pulse{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes blink{50%{opacity:.3}}
+main{max-width:1120px;margin:0 auto;padding:0 12px 60px;width:100%}
+section{margin-top:26px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.in{opacity:1;transform:none}
+.hero{text-align:center;padding-top:50px}
+.overline{
+  display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding:9px 18px;border-radius:999px;background:var(--chip);border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  animation:fadeDown .8s cubic-bezier(.22,1,.36,1) both;
+}
+h1{
+  font-size:clamp(36px,7vw,72px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:22px 0 14px;
+  animation:fadeDown .8s .08s cubic-bezier(.22,1,.36,1) both;
+}
+h1 .grad{
+  background:linear-gradient(100deg,#8ab4ff 0%,#c084fc 45%,#f0abfc 75%,#8ab4ff 100%);background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite;
+}
+@keyframes shine{to{background-position:200% center}}
+.hero-picker{
+  display:inline-flex;align-items:center;gap:15px;margin:20px auto 0;padding:12px 22px 12px 12px;border-radius:22px;
+  cursor:pointer;font:inherit;color:var(--text);text-align:left;
+  background:var(--glass-strong);border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
+  box-shadow:0 10px 36px rgba(0,0,0,.4),inset 0 1px 0 var(--glass-edge);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .35s;
+  animation:fadeUp .8s .14s cubic-bezier(.22,1,.36,1) both;
+  max-width:calc(100vw - 40px);
+}
+.hero-picker:hover{transform:translateY(-4px) scale(1.015);border-color:var(--glass-edge);box-shadow:0 18px 48px rgba(80,120,255,.28),inset 0 1px 0 var(--glass-edge)}
+.hero-picker:active{transform:scale(.97)}
+.hero-picker .hp-ico{
+  width:48px;height:48px;flex:none;border-radius:16px;display:grid;place-items:center;font-size:22px;
+  background:linear-gradient(135deg,#6ea8ff,#c084fc);box-shadow:0 6px 20px rgba(110,140,255,.45),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.hero-picker .hp-col{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hero-picker .hp-small{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.hero-picker .hp-main{font-size:18px;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.hero-picker .hp-spec{font-size:11px;color:var(--muted);max-width:56vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-picker>svg{width:16px;height:16px;flex:none;stroke:var(--muted);fill:none;stroke-width:2.4;stroke-linecap:round;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.hero-picker:hover>svg{transform:translateY(3px)}
+.hero .sub{color:var(--muted);font-size:clamp(14px,2vw,16.5px);max-width:680px;margin:0 auto;line-height:1.55;animation:fadeDown .8s .16s cubic-bezier(.22,1,.36,1) both}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+.week-nav{
+  display:flex;align-items:center;justify-content:center;gap:10px;margin:30px auto 0;max-width:560px;padding:10px;
+  animation:fadeUp .8s .24s cubic-bezier(.22,1,.36,1) both;border-radius:20px;overflow:visible;
+  background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+}
+[data-theme="light"] .week-nav{background:linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.22))}
+.week-nav .wn-btn{width:42px;height:42px;border-radius:14px}
+.week-title{flex:1;min-width:0}
+.week-title .wt-main{font-weight:700;font-size:15.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 10px;border-radius:12px;transition:background .2s}
+.week-title .wt-main:hover{background:var(--chip)}
+.week-title .wt-main svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;transition:transform .3s}
+.week-title.open .wt-main svg{transform:rotate(180deg)}
+.week-title .wt-sub{font-size:11.5px;color:var(--faint);margin-top:2px}
+.week-menu{
+  position:absolute;left:50%;transform:translateX(-50%) translateY(-6px) scale(.97);top:calc(100% + 10px);z-index:60;
+  min-width:280px;max-height:320px;overflow:auto;padding:8px;border-radius:18px;opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.week-menu.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
+.week-menu button{
+  display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:0;border-radius:12px;
+  background:transparent;color:var(--text);font:inherit;font-size:13.5px;cursor:pointer;text-align:left;transition:background .18s;
+}
+.week-menu button:hover{background:var(--chip)}
+.week-menu button.sel{background:var(--seg-thumb);font-weight:700}
+.week-menu .tagx{font-size:10.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted);font-weight:600;white-space:nowrap}
+.week-menu .tagx.ok{color:#4ade80}.week-menu .tagx.no{color:var(--faint)}.week-menu .tagx.mid{color:#fbbf24}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.next-card{
+  max-width:640px;margin:22px auto 0;padding:20px 24px;display:flex;align-items:center;gap:18px;text-align:left;
+  animation:fadeUp .8s .32s cubic-bezier(.22,1,.36,1) both;border-radius:22px;
+}
+.next-card .nc-ico{
+  width:52px;height:52px;flex:none;border-radius:17px;display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(135deg,rgba(127,176,255,.25),rgba(192,132,252,.25));border:1px solid var(--glass-border);
+  box-shadow:inset 0 1px 0 var(--glass-edge);
+}
+.next-card .nc-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.next-card .nc-title{font-size:17px;font-weight:700;margin-top:3px;line-height:1.3}
+.next-card .nc-meta{font-size:12.5px;color:var(--muted);margin-top:4px}
+.next-card .nc-count{margin-left:auto;text-align:right;flex:none}
+.next-card .nc-count b{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(120deg,#8ab4ff,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.next-card .nc-count span{display:block;font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.next-card.now{border-color:rgba(74,222,128,.4)}
+.next-card.now .nc-ico{background:linear-gradient(135deg,rgba(74,222,128,.3),rgba(45,212,167,.2));animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.07)}}
+.seg{position:relative;display:flex;gap:2px;padding:5px;border-radius:19px;background:var(--seg-bg);
+  border:1px solid var(--glass-border);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);
+  box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-edge);overflow:hidden;
+  cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;
+}
+.seg.dragging{cursor:grabbing}
+.seg .thumb{position:absolute;top:5px;bottom:5px;left:0;width:0;border-radius:15px;
+  background:var(--seg-thumb);border:1px solid var(--glass-border);
+  box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 1px 0 var(--glass-edge);
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1),width .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+  -webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);
+}
+.seg .thumb::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 32%,rgba(255,255,255,.30) 50%,transparent 68%);
+  background-size:220% 100%;background-repeat:no-repeat;
+}
+.seg.dragging .thumb{
+  transition:none;
+  box-shadow:0 6px 26px rgba(90,140,255,.35),inset 0 1px 0 var(--glass-edge),0 0 0 1px rgba(140,180,255,.25);
+}
+.seg.dragging .thumb::after{opacity:1;animation:sheen 1.1s linear infinite}
+@keyframes sheen{from{background-position:130% 0}to{background-position:-130% 0}}
+.seg .thumb.settle{animation:thumbSettle .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes thumbSettle{0%{filter:brightness(1.35) saturate(1.3)}100%{filter:none}}
+[data-theme="light"] .seg .thumb{box-shadow:0 4px 14px rgba(30,50,100,.18)}
+.seg button{
+  position:relative;z-index:1;flex:1;min-width:90px;border:0;background:transparent;color:var(--muted);cursor:pointer;
+  font:inherit;padding:11px 8px;border-radius:15px;transition:color .3s,transform .3s;display:flex;flex-direction:column;gap:2px;align-items:center;
+}
+.seg button.near{color:var(--text)}
+.seg.dragging button.near{transform:scale(1.04)}
+.seg button b{font-size:13.5px;font-weight:700;letter-spacing:.04em}
+.seg button i{font-style:normal;font-size:10.5px;opacity:.75;font-variant-numeric:tabular-nums}
+.seg button.on{color:var(--text)}
+.seg button.today b::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#4ade80;margin-left:6px;vertical-align:2px;box-shadow:0 0 8px #4ade80}
+.day-head{display:flex;align-items:baseline;gap:14px;margin:30px 6px 16px;flex-wrap:wrap}
+.day-head h2{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-.01em}
+.day-head .dh-date{color:var(--muted);font-size:14.5px;font-weight:600}
+.day-head .dh-count{margin-left:auto;font-size:12px;color:var(--muted);padding:7px 14px;border-radius:999px;background:var(--chip);border:1px solid var(--glass-border)}
+.slot-row{display:flex;gap:14px;margin-bottom:12px;animation:cardIn .55s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*55ms)}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
+.slot-time{flex:none;width:92px;padding-top:20px;text-align:right}
+.slot-time .st-n{font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.08em}
+.slot-time .st-t{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px;letter-spacing:-.01em}
+.slot-body{flex:1;min-width:0;display:grid;gap:10px}
+.lesson{padding:16px 18px;border-radius:20px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .35s;will-change:transform}
+.lesson:hover{transform:translateY(-4px);border-color:var(--glass-edge);box-shadow:0 18px 44px rgba(0,0,0,.5),inset 0 1px 0 var(--glass-edge)}
+[data-theme="light"] .lesson:hover{box-shadow:0 16px 36px rgba(30,50,100,.2),inset 0 1px 0 var(--glass-edge)}
+.lesson .l-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{font-size:10.5px;font-weight:800;letter-spacing:.09em;padding:5px 11px;border-radius:999px;color:#fff;text-transform:uppercase;flex:none}
+.badge.lk{background:linear-gradient(120deg,#4f7cff,#3b5bdb);box-shadow:0 3px 12px rgba(79,124,255,.4)}
+.badge.lz{background:linear-gradient(120deg,#2dd4a7,#0d9488);box-shadow:0 3px 12px rgba(45,212,167,.35)}
+.badge.pz{background:linear-gradient(120deg,#a78bfa,#7c3aed);box-shadow:0 3px 12px rgba(167,139,250,.4)}
+.badge.sz{background:linear-gradient(120deg,#fbbf24,#d97706);box-shadow:0 3px 12px rgba(251,191,36,.35)}
+.badge.oth{background:linear-gradient(120deg,#94a3b8,#64748b)}
+.badge.rep{background:linear-gradient(120deg,#fb923c,#ea580c);box-shadow:0 3px 12px rgba(251,146,60,.4)}
+.badge.pg{background:var(--chip);border:1px solid var(--glass-border);color:var(--text);box-shadow:none;font-weight:700}
+.lesson h3{font-size:16.5px;font-weight:700;letter-spacing:-.01em;line-height:1.35;margin-top:2px}
+.lesson .l-sub{font-size:11.5px;color:var(--faint);margin-top:3px}
+.lesson .l-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);
+  padding:7px 13px;border-radius:999px;background:var(--chip);border:1px solid var(--glass-border);
+}
+.chip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.slot-empty{flex:1;padding:13px 18px;border-radius:18px;border:1px dashed var(--glass-border);color:var(--faint);font-size:12.5px;display:flex;align-items:center;gap:10px;background:transparent}
+.free-time{display:flex;align-items:center;gap:10px;margin:18px 6px 4px;color:var(--muted);font-size:13px}
+.free-time::before,.free-time::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
+.day-empty{padding:44px 24px;text-align:center;border-radius:var(--radius)}
+#dayContent.swap-r{animation:swapR .5s cubic-bezier(.22,1,.36,1) both}
+#dayContent.swap-l{animation:swapL .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes swapR{from{opacity:0;transform:translateX(38px);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes swapL{from{opacity:0;transform:translateX(-38px);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+.day-empty .de-ico{font-size:42px;margin-bottom:14px;filter:drop-shadow(0 6px 18px rgba(127,176,255,.35))}
+.day-empty h3{font-size:19px;font-weight:700}
+.day-empty p{color:var(--muted);font-size:13.5px;margin-top:8px;line-height:1.6;max-width:480px;margin-left:auto;margin-right:auto}
+.day-empty .mini-btn{margin-top:16px}
+.slot-row.now .slot-time .st-t{color:#4ade80}
+.slot-row.now .lesson{border-color:rgba(74,222,128,.45)}
+.now-tag{font-size:10px;font-weight:800;letter-spacing:.1em;color:#03110a;background:linear-gradient(120deg,#4ade80,#2dd4a7);padding:4px 10px;border-radius:999px;text-transform:uppercase;animation:breathe 2.6s infinite;flex:none}
+.panel-head{display:flex;align-items:center;gap:14px;padding:18px 22px;cursor:pointer;user-select:none}
+.panel-head .ph-ico{width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(135deg,rgba(45,212,167,.22),rgba(127,176,255,.22));border:1px solid var(--glass-border)}
+.panel-head h3{font-size:15.5px;font-weight:700}
+.panel-head p{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+.panel-head .ph-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex:none}
+.mini-btn{
+  padding:9px 15px;border-radius:12px;border:1px solid var(--glass-border);background:var(--chip);color:var(--text);
+  font:inherit;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .25s;white-space:nowrap;
+}
+.mini-btn:hover{background:var(--seg-thumb);transform:translateY(-2px)}
+.mini-btn:active{transform:scale(.95)}
+.mini-btn.primary{background:linear-gradient(120deg,#4f7cff,#7c3aed);border-color:transparent;color:#fff;box-shadow:0 6px 20px rgba(94,124,255,.4)}
+.mini-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.chev{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2.2;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.panel.open .chev{transform:rotate(180deg)}
+.panel-body{max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.22,1,.36,1)}
+.panel.open .panel-body{max-height:1100px}
+.iframe-wrap{margin:0 18px 18px;border-radius:18px;overflow:hidden;border:1px solid var(--glass-border);background:#fff;height:640px;position:relative}
+.iframe-wrap iframe{width:100%;height:100%;border:0;display:block}
+.iframe-hint{padding:0 22px 16px;font-size:11.5px;color:var(--faint);line-height:1.55}
+.links-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.link-card{padding:18px 20px;border-radius:20px;text-decoration:none;color:var(--text);display:block;transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s}
+.link-card:hover{transform:translateY(-5px);border-color:var(--glass-edge)}
+.link-card .lc-ico{font-size:22px;margin-bottom:10px}
+.link-card b{font-size:14px;display:block}
+.link-card span{font-size:12px;color:var(--muted);display:block;margin-top:4px;line-height:1.45}
+.link-card .go{float:right;color:var(--faint);font-size:16px;transition:transform .3s}
+.link-card:hover .go{transform:translate(3px,-3px);color:var(--accent)}
+footer{max-width:1120px;margin:40px auto 0;padding:26px 24px 40px;width:calc(100% - 24px);border-top:1px solid var(--glass-border);
+  color:var(--faint);font-size:12px;line-height:1.7;text-align:center}
+footer a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--faint)}
+footer a:hover{color:var(--accent)}
+#toasts{position:fixed;right:16px;bottom:16px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:min(360px,calc(100vw - 32px))}
+.toast{padding:14px 18px;border-radius:17px;font-size:13px;font-weight:600;display:flex;gap:11px;align-items:center;
+  animation:toastIn .5s cubic-bezier(.34,1.56,.64,1) both;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+.toast.out{animation:toastOut .35s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(24px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px) scale(.96)}}
+.toast .ti{font-size:16px}
+.toast small{display:block;font-weight:500;color:var(--muted);margin-top:2px;font-size:11.5px}
+/* ======= group picker modal ======= */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:150;background:rgba(3,6,15,.55);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  opacity:0;pointer-events:none;transition:opacity .3s ease;overflow-y:auto;padding:16px;
+}
+.modal-backdrop.show{opacity:1;pointer-events:auto}
+.modal-card{
+  max-width:760px;width:100%;margin:5vh auto;max-height:88vh;display:flex;flex-direction:column;
+  border-radius:26px;transform:translateY(22px) scale(.96);opacity:.6;
+  transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+}
+.modal-backdrop.show .modal-card{transform:none;opacity:1}
+.modal-head{display:flex;align-items:center;gap:12px;padding:20px 22px 14px;flex:none}
+.modal-head h3{font-size:17px;font-weight:800;letter-spacing:-.01em}
+.modal-head .mh-count{font-size:12px;color:var(--muted);margin-top:2px}
+.modal-head .x-btn{margin-left:auto}
+.gsearch-wrap{padding:0 22px 12px;flex:none}
+#groupSearch{
+  width:100%;padding:13px 18px 13px 44px;border-radius:15px;border:1px solid var(--glass-border);
+  background:var(--chip);color:var(--text);font:inherit;font-size:14px;outline:none;
+  transition:border-color .25s,box-shadow .25s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238899bb' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:16px center;
+}
+#groupSearch:focus{border-color:rgba(127,176,255,.55);box-shadow:0 0 0 3px rgba(127,176,255,.15)}
+#groupSearch::placeholder{color:var(--faint)}
+.fac-tabs{display:flex;gap:6px;padding:0 22px 12px;overflow-x:auto;scrollbar-width:none;flex:none}
+.fac-tabs::-webkit-scrollbar{display:none}
+.fac-tab{
+  padding:8px 14px;border-radius:999px;border:1px solid var(--glass-border);background:transparent;color:var(--muted);
+  font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .25s;flex:none;
+}
+.fac-tab:hover{background:var(--chip);color:var(--text)}
+.fac-tab.on{background:linear-gradient(120deg,#4f7cff,#7c3aed);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(94,124,255,.4)}
+.group-scroll{overflow-y:auto;padding:2px 22px 20px;flex:1 1 0;min-height:0;overscroll-behavior:contain}
+.fac-sec{margin-top:14px}
+.fac-sec h4{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 4px 9px}
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:8px}
+.gchip{
+  position:relative;padding:11px 12px;border-radius:14px;border:1px solid var(--glass-border);background:var(--chip);
+  color:var(--text);font:inherit;cursor:pointer;text-align:left;transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .25s,background .25s;
+  display:flex;align-items:center;gap:8px;
+}
+.gchip:hover{transform:translateY(-3px);border-color:var(--glass-edge);background:var(--seg-thumb)}
+.gchip:active{transform:scale(.97)}
+.gchip b{font-size:13.5px;font-weight:800;letter-spacing:.02em}
+.gchip .cdot{width:7px;height:7px;border-radius:50%;margin-left:auto;flex:none;background:rgba(128,140,160,.35)}
+.gchip .cdot.has{background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.7)}
+.gchip.sel{border-color:rgba(127,176,255,.65);background:rgba(127,176,255,.12)}
+.gchip .gspec{position:absolute;left:12px;right:12px;bottom:-1px;font-size:9px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0}
+.modal-foot{padding:12px 22px 16px;font-size:11px;color:var(--faint);border-top:1px solid var(--glass-border);flex:none}
+.no-results{padding:30px;text-align:center;color:var(--muted);font-size:13.5px}
+@media (max-width:720px){
+  .topbar{margin:8px 8px 0;width:calc(100% - 16px);padding:8px 10px;gap:8px}
+  .tb-meta{display:none}
+  .group-btn{flex:1;min-width:0;justify-content:center}
+  #groupBtnLabel{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .status-chip{padding:7px 10px;font-size:10.5px}
+  .status-chip #statusText{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hero{padding-top:32px}
+  .slot-row{gap:10px}
+  .slot-time{width:64px;padding-top:16px}
+  .slot-time .st-t{font-size:12.5px}
+  .lesson{padding:14px}
+  .next-card{flex-wrap:wrap}
+  .next-card .nc-count{margin-left:0;text-align:left;width:100%}
+  .next-card .nc-count b{font-size:20px}
+  .seg button{min-width:0;padding:9px 2px}
+  .seg button i{font-size:9px}
+  .hero-picker{padding:10px 16px 10px 10px;gap:11px;border-radius:19px}
+  .hero-picker .hp-ico{width:42px;height:42px;font-size:19px;border-radius:14px}
+  .hero-picker .hp-main{font-size:16px}
+  .hero-picker .hp-spec{max-width:48vw}
+  .panel-head{flex-wrap:wrap}
+  .panel-head .ph-actions{width:100%;margin-left:0;justify-content:flex-end}
+  .modal-card{margin:2vh auto;max-height:94vh}
+  .group-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+}
+@media (max-width:400px){
+  .status-chip #statusText{display:none}
+  .status-chip{padding:8px}
+  .group-btn svg:last-child{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="topbar glass">
+  <div class="logo" id="logoBox">БГ</div>
+  <div class="tb-meta">
+    <div class="tt">Расписание БарГУ</div>
+    <div class="ts" id="topSub">все группы · rasp.barsu.by</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="group-btn" id="groupBtn" title="Выбрать группу">
+    <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <b id="groupBtnLabel">ПИТТ-21</b>
+    <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round"/></svg>
+  </button>
+  <div class="status-chip" id="statusChip" data-s="snap" title="Источник данных"><span class="dot"></span><span id="statusText">снимок</span></div>
+  <button class="icon-btn" id="themeBtn" title="Сменить тему" aria-label="Сменить тему">
+    <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+  </button>
+  <button class="icon-btn" id="refreshBtn" title="Обновить с rasp.barsu.by" aria-label="Обновить">
+    <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg>
+  </button>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="overline">🎓 Барановичский государственный университет</div>
+    <h1><span class="grad">Расписание</span></h1>
+    <button class="hero-picker" id="heroPicker" aria-haspopup="true" title="Выбрать группу">
+      <span class="hp-ico">👥</span>
+      <span class="hp-col">
+        <span class="hp-small">выбор группы</span>
+        <span class="hp-main" id="hpGroup">…</span>
+        <span class="hp-spec" id="hpSpec">…</span>
+      </span>
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round"/></svg>
+    </button>
+    <p class="sub" id="heroSub">…</p>
+
+    <div class="week-nav glass" id="weekNav">
+      <button class="icon-btn wn-btn" id="prevWeek" aria-label="Предыдущая неделя">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="week-title" id="weekTitle">
+        <div class="wt-main" id="weekBtn" role="button" tabindex="0" aria-haspopup="true">
+          <span id="weekLabel">…</span>
+          <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="wt-sub" id="weekSub">&nbsp;</div>
+        <div class="week-menu glass" id="weekMenu"></div>
+      </div>
+      <button class="icon-btn wn-btn" id="nextWeek" aria-label="Следующая неделя">
+        <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <div class="next-card glass" id="nextCard">
+      <div class="nc-ico" id="ncIco">⏳</div>
+      <div>
+        <div class="nc-label" id="ncLabel">следующая пара</div>
+        <div class="nc-title" id="ncTitle">…</div>
+        <div class="nc-meta" id="ncMeta"></div>
+      </div>
+      <div class="nc-count"><b id="ncCount">—</b><span id="ncCountLabel">до начала</span></div>
+    </div>
+  </section>
+
+  <section id="scheduleSection" class="reveal">
+    <div class="seg" id="daySeg" role="tablist"><div class="thumb" id="segThumb"></div></div>
+    <div id="dayContent"></div>
+  </section>
+
+  <section id="officialSection" class="reveal">
+    <div class="glass panel" id="officialPanel">
+      <div class="panel-head" id="panelHead" role="button" tabindex="0" aria-expanded="false">
+        <div class="ph-ico">📡</div>
+        <div>
+          <h3>Официальный источник — живые данные</h3>
+          <p>Запрос уходит напрямую в rasp.barsu.by и показывает расписание университета «как есть», со всеми заменами.</p>
+        </div>
+        <div class="ph-actions">
+          <form id="officialFormNew" method="post" action="https://rasp.barsu.by/stud.php" target="_blank" rel="noopener" style="display:inline"></form>
+          <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="iframe-wrap">
+          <iframe id="raspFrame" name="raspFrame" title="Расписание с официального сайта rasp.barsu.by" loading="lazy"></iframe>
+        </div>
+        <p class="iframe-hint">Это живой ответ официального сервера БарГУ для выбранных группы и недели. Если таблица пустая — расписание ещё не опубликовано университетом.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="links-grid">
+      <a class="link-card glass" href="https://rasp.barsu.by/stud.php" target="_blank" rel="noopener">
+        <span class="go">↗</span><div class="lc-ico">🗓️</div><b>rasp.barsu.by</b><span>Официальный сервис расписания БарГУ</span>
+      </a>
+      <a class="link-card glass" href="https://t.me/rasp_barsu_bot" target="_blank" rel="noopener">
+        <span class="go">↗</span><div class="lc-ico">🤖</div><b>Telegram-бот БарГУ</b><span>Уведомления о парах и заменах</span>
+      </a>
+      <a class="link-card glass" href="https://www.barsu.by/" target="_blank" rel="noopener">
+        <span class="go">↗</span><div class="lc-ico">🏛️</div><b>barsu.by</b><span>Сайт университета</span>
+      </a>
+      <a class="link-card glass" href="https://education.barsu.by/" target="_blank" rel="noopener">
+        <span class="go">↗</span><div class="lc-ico">📚</div><b>Образовательный портал</b><span>Электронные учебные курсы</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Неофициальное студенческое зеркало · <span id="footGroups">все группы БарГУ</span><br>
+  Источник данных: <a href="https://rasp.barsu.by/stud.php" target="_blank" rel="noopener">rasp.barsu.by</a> ·
+  <span id="footMeta">…</span><br>
+  Сайт автоматически обновляет расписание при каждом открытии: сначала пытается получить свежие данные напрямую, иначе показывает последний кэш или встроенный снимок.
+  Прямые запросы браузера к rasp.barsu.by ограничены политикой CORS университета, поэтому «живой» режим может быть недоступен — на этот случай ниже есть официальный фрейм и снимок данных.
+</footer>
+
+<div class="modal-backdrop" id="groupModal" role="dialog" aria-modal="true" aria-label="Выбор группы">
+  <div class="glass modal-card" id="modalCard">
+    <div class="modal-head">
+      <div>
+        <h3>Выберите группу</h3>
+        <div class="mh-count" id="modalCount"></div>
+      </div>
+      <button class="icon-btn x-btn" id="modalClose" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="gsearch-wrap">
+      <input id="groupSearch" type="search" placeholder="Поиск: код группы или специальность…" autocomplete="off">
+    </div>
+    <div class="fac-tabs" id="facTabs"></div>
+    <div class="group-scroll" id="groupScroll"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<form id="officialForm" method="post" action="https://rasp.barsu.by/stud.php" target="raspFrame" aria-hidden="true" style="display:none">
+  <input type="hidden" name="faculty" id="ifFac" value="">
+  <input type="hidden" name="speciality" id="ifSpec" value="">
+  <input type="hidden" name="groups" id="ifGroup" value="">
+  <input type="hidden" name="weekbegindate" id="ifWeek" value="">
+  <input type="hidden" name="go" value="Показать">
+</form>
+
+<div id="toasts"></div>
+
+<script id="snapshot" type="application/json">{"groups":[{"code":"БА11","speciality":"Бухгалтерский учет, анализ и аудит","faculty":"Факультет экономики и права","file":"data/g000.json","has":true,"weeks":["2026-10-05"]},{"code":"БА21","speciality":"Бухгалтерский учет, анализ и аудит","faculty":"Факультет экономики и права","file":"data/g001.json","has":true,"weeks":["2026-10-05"]},{"code":"БА31","speciality":"Бухгалтерский учет, анализ и аудит","faculty":"Факультет экономики и права","file":"data/g002.json","has":true,"weeks":["2026-10-05"]},{"code":"БА41","speciality":"Бухгалтерский учет, анализ и аудит","faculty":"Факультет экономики и права","file":"data/g003.json","has":true,"weeks":["2026-10-05"]},{"code":"БАзс31","speciality":"Бухгалтерский учет, анализ и аудит","faculty":"Факультет экономики и права","file":"data/g004.json","has":true,"weeks":["2026-10-05"]},{"code":"БУз225","speciality":"Бухгалтерский учет и анализ","faculty":"Институт повышения квалификации и переподготовка","file":"data/g005.json","has":true,"weeks":["2026-10-05"]},{"code":"ГЭ11","speciality":"Геоэкология","faculty":"Факультет педагогики и психологии","file":"data/g006.json","has":true,"weeks":["2026-10-05"]},{"code":"ГЭ21","speciality":"Геоэкология","faculty":"Факультет педагогики и психологии","file":"data/g007.json","has":true,"weeks":["2026-10-05"]},{"code":"ГЭ31","speciality":"Геоэкология","faculty":"Факультет педагогики и психологии","file":"data/g008.json","has":true,"weeks":["2026-10-05"]},{"code":"ГЭ41","speciality":"Геоэкология","faculty":"Факультет педагогики и психологии","file":"data/g009.json","has":false,"weeks":[]},{"code":"ДО11","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g010.json","has":true,"weeks":["2026-10-05"]},{"code":"ДО21","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g011.json","has":true,"weeks":["2026-10-05"]},{"code":"ДО31","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g012.json","has":true,"weeks":["2026-10-05"]},{"code":"ДО41","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g013.json","has":false,"weeks":[]},{"code":"ДОзс11","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g014.json","has":false,"weeks":[]},{"code":"ДОзс12","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g015.json","has":false,"weeks":[]},{"code":"ДОзс21","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g016.json","has":true,"weeks":["2026-10-05"]},{"code":"ДОзс22","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g017.json","has":true,"weeks":["2026-10-05"]},{"code":"ДОзс31","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g018.json","has":false,"weeks":[]},{"code":"ДОзс32","speciality":"Дошкольное образование","faculty":"Факультет педагогики и психологии","file":"data/g019.json","has":false,"weeks":[]},{"code":"ИСТ11","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g020.json","has":true,"weeks":["2026-10-05"]},{"code":"ИСТ21","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g021.json","has":true,"weeks":["2026-10-05"]},{"code":"ИСТ22","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g022.json","has":true,"weeks":["2026-10-05"]},{"code":"ИСТ31","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g023.json","has":true,"weeks":["2026-10-05"]},{"code":"ИСТ32","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g024.json","has":true,"weeks":["2026-10-05"]},{"code":"ИСТ41","speciality":"Информационные системы и технологии","faculty":"Инженерный факультет","file":"data/g025.json","has":true,"weeks":["2026-10-05"]},{"code":"ИТМм11","speciality":"Инновационные технологии в машиностроении","faculty":"Инженерный факультет","file":"data/g026.json","has":true,"weeks":["2026-10-05"]},{"code":"ИТМмз31","speciality":"Инновационные технологии в машиностроении","faculty":"Инженерный факультет","file":"data/g027.json","has":true,"weeks":["2026-10-05"]},{"code":"ИЭ11","speciality":"Инженерная экономика (Экономика и цифровые технологии на промышленном предприятии)","faculty":"Факультет экономики и права","file":"data/g028.json","has":true,"weeks":["2026-10-05"]},{"code":"ИЭ21","speciality":"Инженерная экономика (Экономика и цифровые технологии на промышленном предприятии)","faculty":"Факультет экономики и права","file":"data/g029.json","has":true,"weeks":["2026-10-05"]},{"code":"ИЭ31","speciality":"Инженерная экономика (Экономика и цифровые технологии на промышленном предприятии)","faculty":"Факультет экономики и права","file":"data/g030.json","has":true,"weeks":["2026-10-05"]},{"code":"ИЭ41","speciality":"Инженерная экономика (Экономика и цифровые технологии на промышленном предприятии)","faculty":"Факультет экономики и права","file":"data/g031.json","has":true,"weeks":["2026-10-05"]},{"code":"ЛА41","speciality":"Лингвистическое образование (Английский язык)","faculty":"Лингвистический факультет","file":"data/g032.json","has":true,"weeks":["2026-10-05"]},{"code":"Мзс31","speciality":"Маркетинг","faculty":"Факультет экономики и права","file":"data/g033.json","has":true,"weeks":["2026-10-05"]},{"code":"НО11","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g034.json","has":true,"weeks":["2026-10-05"]},{"code":"НО21","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g035.json","has":true,"weeks":["2026-10-05"]},{"code":"НО31","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g036.json","has":true,"weeks":["2026-10-05"]},{"code":"НО41","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g037.json","has":true,"weeks":["2026-10-05"]},{"code":"НОзс11","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g038.json","has":false,"weeks":[]},{"code":"НОзс21","speciality":"Начальное образование","faculty":"Факультет педагогики и психологии","file":"data/g039.json","has":true,"weeks":["2026-10-05"]},{"code":"НПДм11","speciality":"Научно-педагогическая деятельность","faculty":"Факультет педагогики и психологии","file":"data/g040.json","has":true,"weeks":["2026-10-05"]},{"code":"НПДмз11","speciality":"Научно-педагогическая деятельность","faculty":"Факультет педагогики и психологии","file":"data/g041.json","has":true,"weeks":["2026-10-05"]},{"code":"НПДмия11","speciality":"Научно-педагогическая деятельность","faculty":"Факультет педагогики и психологии","file":"data/g042.json","has":true,"weeks":["2026-10-05"]},{"code":"ОТИ11","speciality":"Обслуживающий труд и изобразительное искусство","faculty":"Факультет педагогики и психологии","file":"data/g043.json","has":true,"weeks":["2026-10-05"]},{"code":"ОТИ21","speciality":"Обслуживающий труд и изобразительное искусство","faculty":"Факультет педагогики и психологии","file":"data/g044.json","has":true,"weeks":["2026-10-05"]},{"code":"ОТИ31","speciality":"Обслуживающий труд и изобразительное искусство","faculty":"Факультет педагогики и психологии","file":"data/g045.json","has":false,"weeks":[]},{"code":"ОТИ41","speciality":"Обслуживающий труд и изобразительное искусство","faculty":"Факультет педагогики и психологии","file":"data/g046.json","has":false,"weeks":[]},{"code":"ОФКз226","speciality":"Оздоровительная физическая культура","faculty":"Институт повышения квалификации и переподготовка","file":"data/g047.json","has":true,"weeks":["2026-10-05"]},{"code":"ПДз225","speciality":"Педагогическая деятельность специалистов","faculty":"Институт повышения квалификации и переподготовка","file":"data/g048.json","has":true,"weeks":["2026-10-05"]},{"code":"ПИТТ11","speciality":"Производство изделий на основе трехмерных технологий","faculty":"Инженерный факультет","file":"data/g049.json","has":true,"weeks":["2026-10-05"]},{"code":"ПИТТ21","speciality":"Производство изделий на основе трехмерных технологий","faculty":"Инженерный факультет","file":"data/g050.json","has":true,"weeks":["2026-10-05","2026-09-28","2026-09-21","2026-09-14","2026-09-07","2026-08-31"]},{"code":"ПИТТ31","speciality":"Производство изделий на основе трехмерных технологий","faculty":"Инженерный факультет","file":"data/g051.json","has":true,"weeks":["2026-10-05"]},{"code":"ПИТТ41","speciality":"Производство изделий на основе трехмерных технологий","faculty":"Инженерный факультет","file":"data/g052.json","has":true,"weeks":["2026-10-05"]},{"code":"Пм11","speciality":"Психология(м)","faculty":"Факультет педагогики и психологии","file":"data/g053.json","has":true,"weeks":["2026-10-05"]},{"code":"ППз224","speciality":"Психологическое сопровождение педагогической деятельности","faculty":"Институт повышения квалификации и переподготовка","file":"data/g054.json","has":false,"weeks":[]},{"code":"ППз225","speciality":"Психологическое сопровождение педагогической деятельности","faculty":"Институт повышения квалификации и переподготовка","file":"data/g055.json","has":true,"weeks":["2026-10-05"]},{"code":"ПР31","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g056.json","has":true,"weeks":["2026-10-05"]},{"code":"ПР41","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g057.json","has":true,"weeks":["2026-10-05"]},{"code":"ПРз225","speciality":"Правоведение(переподготовка)","faculty":"Институт повышения квалификации и переподготовка","file":"data/g058.json","has":false,"weeks":[]},{"code":"ПРзс11","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g059.json","has":true,"weeks":["2026-10-05"]},{"code":"ПРзс12","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g060.json","has":true,"weeks":["2026-10-05"]},{"code":"ПРзс31","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g061.json","has":false,"weeks":[]},{"code":"ПРзс32","speciality":"Правоведение","faculty":"Факультет экономики и права","file":"data/g062.json","has":false,"weeks":[]},{"code":"ПС11","speciality":"Психология","faculty":"Факультет педагогики и психологии","file":"data/g063.json","has":true,"weeks":["2026-10-05"]},{"code":"ПС21","speciality":"Психология","faculty":"Факультет педагогики и психологии","file":"data/g064.json","has":true,"weeks":["2026-10-05"]},{"code":"ПС31","speciality":"Психология","faculty":"Факультет педагогики и психологии","file":"data/g065.json","has":true,"weeks":["2026-10-05"]},{"code":"ПСз11","speciality":"Психология","faculty":"Факультет педагогики и психологии","file":"data/g066.json","has":false,"weeks":[]},{"code":"ПСз31","speciality":"Психология","faculty":"Факультет педагогики и психологии","file":"data/g067.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯк11","speciality":"Современные иностранные языки (Английский язык. Китайский язык)","faculty":"Лингвистический факультет","file":"data/g068.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯк12","speciality":"Современные иностранные языки (Английский язык. Китайский язык)","faculty":"Лингвистический факультет","file":"data/g069.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯк21","speciality":"Современные иностранные языки (Английский язык. Китайский язык)","faculty":"Лингвистический факультет","file":"data/g070.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯк22","speciality":"Современные иностранные языки (Английский язык. Китайский язык)","faculty":"Лингвистический факультет","file":"data/g071.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯк31","speciality":"Современные иностранные языки (Английский язык. Китайский язык)","faculty":"Лингвистический факультет","file":"data/g072.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн13","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g073.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн14","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g074.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн23","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g075.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн24","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g076.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн32","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g077.json","has":true,"weeks":["2026-10-05"]},{"code":"СИЯн33","speciality":"Современные иностранные языки (Английский язык. Немецкий язык)","faculty":"Лингвистический факультет","file":"data/g078.json","has":true,"weeks":["2026-10-05"]},{"code":"СПП11","speciality":"Социально-педагогическое и психологическое образование","faculty":"Факультет педагогики и психологии","file":"data/g079.json","has":true,"weeks":["2026-10-05"]},{"code":"СПП21","speciality":"Социально-педагогическое и психологическое образование","faculty":"Факультет педагогики и психологии","file":"data/g080.json","has":true,"weeks":["2026-10-05"]},{"code":"СПП31","speciality":"Социально-педагогическое и психологическое образование","faculty":"Факультет педагогики и психологии","file":"data/g081.json","has":false,"weeks":[]},{"code":"СПП41","speciality":"Социально-педагогическое и психологическое образование","faculty":"Факультет педагогики и психологии","file":"data/g082.json","has":true,"weeks":["2026-10-05"]},{"code":"СПП42","speciality":"Социально-педагогическое и психологическое образование","faculty":"Факультет педагогики и психологии","file":"data/g083.json","has":true,"weeks":["2026-10-05"]},{"code":"ТМ11","speciality":"Технология машиностроения","faculty":"Инженерный факультет","file":"data/g084.json","has":true,"weeks":["2026-10-05"]},{"code":"ТМ21","speciality":"Технология машиностроения","faculty":"Инженерный факультет","file":"data/g085.json","has":true,"weeks":["2026-10-05"]},{"code":"ТМ31","speciality":"Технология машиностроения","faculty":"Инженерный факультет","file":"data/g086.json","has":true,"weeks":["2026-10-05"]},{"code":"ТМ41","speciality":"Технология машиностроения","faculty":"Инженерный факультет","file":"data/g087.json","has":true,"weeks":["2026-10-05"]},{"code":"ТМзс41","speciality":"Технология машиностроения","faculty":"Инженерный факультет","file":"data/g088.json","has":false,"weeks":[]},{"code":"ТОСП11","speciality":"Техническое  обеспечение производства сельскохозяйственной продукции","faculty":"Инженерный факультет","file":"data/g089.json","has":true,"weeks":["2026-10-05"]},{"code":"ТОСП21","speciality":"Техническое  обеспечение производства сельскохозяйственной продукции","faculty":"Инженерный факультет","file":"data/g090.json","has":true,"weeks":["2026-10-05"]},{"code":"ТОСП31","speciality":"Техническое  обеспечение производства сельскохозяйственной продукции","faculty":"Инженерный факультет","file":"data/g091.json","has":true,"weeks":["2026-10-05"]},{"code":"ТОСПзс11","speciality":"Техническое  обеспечение производства сельскохозяйственной продукции","faculty":"Инженерный факультет","file":"data/g092.json","has":true,"weeks":["2026-10-05"]},{"code":"ТЭА11","speciality":"Эксплуатация наземных транспортных и технологических машин и комплексов","faculty":"Инженерный факультет","file":"data/g093.json","has":true,"weeks":["2026-10-05"]},{"code":"ТЭА21","speciality":"Эксплуатация наземных транспортных и технологических машин и комплексов","faculty":"Инженерный факультет","file":"data/g094.json","has":true,"weeks":["2026-10-05"]},{"code":"ТЭА31","speciality":"Эксплуатация наземных транспортных и технологических машин и комплексов","faculty":"Инженерный факультет","file":"data/g095.json","has":true,"weeks":["2026-10-05"]},{"code":"ФБ11","speciality":"Филологическое образование (Белорусский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g096.json","has":true,"weeks":["2026-10-05"]},{"code":"ФБ21","speciality":"Филологическое образование (Белорусский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g097.json","has":true,"weeks":["2026-10-05"]},{"code":"ФБ31","speciality":"Филологическое образование (Белорусский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g098.json","has":true,"weeks":["2026-10-05"]},{"code":"ФБ41","speciality":"Филологическое образование (Белорусский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g099.json","has":true,"weeks":["2026-10-05"]},{"code":"ФК11","speciality":"Образование в области физической культуры","faculty":"Факультет педагогики и психологии","file":"data/g100.json","has":true,"weeks":["2026-10-05"]},{"code":"ФК21","speciality":"Образование в области физической культуры","faculty":"Факультет педагогики и психологии","file":"data/g101.json","has":true,"weeks":["2026-10-05"]},{"code":"ФК31","speciality":"Образование в области физической культуры","faculty":"Факультет педагогики и психологии","file":"data/g102.json","has":true,"weeks":["2026-10-05"]},{"code":"ФК41","speciality":"Образование в области физической культуры","faculty":"Факультет педагогики и психологии","file":"data/g103.json","has":false,"weeks":[]},{"code":"ФКзс11","speciality":"Образование в области физической культуры","faculty":"Факультет педагогики и психологии","file":"data/g104.json","has":false,"weeks":[]},{"code":"ФКСТ11","speciality":"Организация и управление физической культурой, спортом и туризмом (Менеджмент в спорте)","faculty":"Факультет педагогики и психологии","file":"data/g105.json","has":true,"weeks":["2026-10-05"]},{"code":"ФКСТ21","speciality":"Организация и управление физической культурой, спортом и туризмом (Менеджмент в спорте)","faculty":"Факультет педагогики и психологии","file":"data/g106.json","has":true,"weeks":["2026-10-05"]},{"code":"ФКСТ31","speciality":"Организация и управление физической культурой, спортом и туризмом (Менеджмент в спорте)","faculty":"Факультет педагогики и психологии","file":"data/g107.json","has":true,"weeks":["2026-10-05"]},{"code":"ФКСТ41","speciality":"Организация и управление физической культурой, спортом и туризмом (Менеджмент в спорте)","faculty":"Факультет педагогики и психологии","file":"data/g108.json","has":true,"weeks":["2026-10-05"]},{"code":"ФР11","speciality":"Филологическое образование (Русский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g109.json","has":true,"weeks":["2026-10-05"]},{"code":"ФР21","speciality":"Филологическое образование (Русский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g110.json","has":true,"weeks":["2026-10-05"]},{"code":"ФР31","speciality":"Филологическое образование (Русский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g111.json","has":true,"weeks":["2026-10-05"]},{"code":"ФР41","speciality":"Филологическое образование (Русский язык и литература. Иностранный язык(английский))","faculty":"Лингвистический факультет","file":"data/g112.json","has":true,"weeks":["2026-10-05"]},{"code":"Эз126","speciality":"Экономика и управление на предприятии промышленности","faculty":"Институт повышения квалификации и переподготовка","file":"data/g113.json","has":false,"weeks":[]},{"code":"ЭМ11","speciality":"Электронная экономика","faculty":"Факультет экономики и права","file":"data/g114.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭМ21","speciality":"Электронная экономика","faculty":"Факультет экономики и права","file":"data/g115.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭМ31","speciality":"Электронная экономика","faculty":"Факультет экономики и права","file":"data/g116.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭМ41","speciality":"Электронная экономика","faculty":"Факультет экономики и права","file":"data/g117.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭМи11","speciality":"Электронная экономика","faculty":"Факультет экономики и права","file":"data/g118.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭП31","speciality":"Экономическое право","faculty":"Факультет экономики и права","file":"data/g119.json","has":true,"weeks":["2026-10-05"]},{"code":"ЭП41","speciality":"Экономическое право","faculty":"Факультет экономики и права","file":"data/g120.json","has":true,"weeks":["2026-10-05"]}],"currentWeek":"2026-10-05","weeksAvailable":["2026-10-19","2026-10-12","2026-10-05","2026-09-28","2026-09-21","2026-09-14","2026-09-07","2026-08-31","2026-08-24","2026-08-17","2026-05-11","2026-05-04","2026-04-27"],"fetchedAt":"2026-10-06 05:51:11","defaultGroup":"ПИТТ21","defaultData":{"meta":{"group":"ПИТТ21","faculty":"Инженерный факультет","speciality":"Производство изделий на основе трехмерных технологий","source":"https://rasp.barsu.by/stud.php","fetchedAt":"2026-10-06 05:49:03","weeksAvailable":["2026-10-19","2026-10-12","2026-10-05","2026-09-28","2026-09-21","2026-09-14","2026-09-07","2026-08-31","2026-08-24","2026-08-17","2026-05-11","2026-05-04","2026-04-27"],"currentWeek":"2026-10-05"},"schedules":{"2026-10-05":{"weekBegin":"2026-10-05","heading":"Расписание  на неделю c 05.10.26","lastUpdate":"2026-10-02 04:39:05","days":[{"abbr":"ПН","name":"Понедельник","date":"05.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-05","dateFull":"05.10.2026"},{"abbr":"ВТ","name":"Вторник","date":"06.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"МехМатИКонстр","type":"ЛЗ","teacher":"Мороз А.А.","room":"3/123","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ПЗ","teacher":"Мялик К.К.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"4/313","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-06","dateFull":"06.10.2026"},{"abbr":"СР","name":"Среда","date":"07.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВысшМатематика","type":"ПЗ","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ЛК","teacher":"Рогозина Е.В.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/404","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"4/401","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"4/306","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-07","dateFull":"07.10.2026"},{"abbr":"ЧТ","name":"Четверг","date":"08.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/214","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"СЗ","teacher":"Вируцкая С.В.","room":"4/417","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-08","dateFull":"08.10.2026"},{"abbr":"ПТ","name":"Пятница","date":"09.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Политология","type":"СЗ","teacher":"Демидович А.В.","room":"4/102","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-09","dateFull":"09.10.2026"}]},"2026-09-28":{"weekBegin":"2026-09-28","heading":"Расписание  на неделю c 28.09.26","lastUpdate":"2026-09-29 08:56:20","days":[{"abbr":"ПН","name":"Понедельник","date":"28.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-28","dateFull":"28.09.2026"},{"abbr":"ВТ","name":"Вторник","date":"29.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/209","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"МехМатИКонстр","type":"ЛЗ","teacher":"Мороз А.А.","room":"3/123","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ПЗ","teacher":"Мялик К.К.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Философия","type":"СЗ","teacher":"Чеб Л.Д.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-29","dateFull":"29.09.2026"},{"abbr":"СР","name":"Среда","date":"30.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВысшМатематика","type":"ПЗ","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ЛК","teacher":"Рогозина Е.В.","room":"4/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/306","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"4/401","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"1/105","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-30","dateFull":"30.09.2026"},{"abbr":"ЧТ","name":"Четверг","date":"01.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Иценко А.Г.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"Философия","type":"СЗ","teacher":"Чеб Л.Д.","room":"4/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ПЗ","teacher":"Мороз А.А.","room":"4/301","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-01","dateFull":"01.10.2026"},{"abbr":"ПТ","name":"Пятница","date":"02.10","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Политология","type":"ЛК","teacher":"Демидович А.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-10-02","dateFull":"02.10.2026"}]},"2026-09-21":{"weekBegin":"2026-09-21","heading":"Расписание  на неделю c 21.09.26","lastUpdate":"2026-09-25 10:39:52","days":[{"abbr":"ПН","name":"Понедельник","date":"21.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ТеорМех","type":"ПЗ","teacher":"Мялик К.К.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-21","dateFull":"21.09.2026"},{"abbr":"ВТ","name":"Вторник","date":"22.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ПЗ","teacher":"Мороз А.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"5/401","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-22","dateFull":"22.09.2026"},{"abbr":"СР","name":"Среда","date":"23.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ЛК","teacher":"Булыга И.С.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ЛК","teacher":"Рогозина Е.В.","room":"4/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/404","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"5/401","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"3/222","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"5/401","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-23","dateFull":"23.09.2026"},{"abbr":"ЧТ","name":"Четверг","date":"24.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"СЗ","teacher":"Вируцкая С.В.","room":"4/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Философия","type":"СЗ","teacher":"Чеб Л.Д.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"4/313","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-24","dateFull":"24.09.2026"},{"abbr":"ПТ","name":"Пятница","date":"25.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-25","dateFull":"25.09.2026"}]},"2026-09-14":{"weekBegin":"2026-09-14","heading":"Расписание  на неделю c 14.09.26","lastUpdate":"2026-09-25 10:39:52","days":[{"abbr":"ПН","name":"Понедельник","date":"14.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"4/313","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false},{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛЗ","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"2","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-14","dateFull":"14.09.2026"},{"abbr":"ВТ","name":"Вторник","date":"15.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ПЗ","teacher":"Мороз А.А.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛЗ","teacher":"Богданович И.А.","room":"3/205","building":"Парк","subgroup":"2","note":"","replacement":false},{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Философия","type":"СЗ","teacher":"Чеб Л.Д.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-15","dateFull":"15.09.2026"},{"abbr":"СР","name":"Среда","date":"16.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВысшМатематика","type":"ПЗ","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ЛК","teacher":"Рогозина Е.В.","room":"4/205","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/404","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"1/105","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"5/403","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-16","dateFull":"16.09.2026"},{"abbr":"ЧТ","name":"Четверг","date":"17.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Политология","type":"СЗ","teacher":"Демидович А.В.","room":"4/313","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-17","dateFull":"17.09.2026"},{"abbr":"ПТ","name":"Пятница","date":"18.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Политология","type":"ЛК","teacher":"Демидович А.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛЗ","teacher":"Приходько С.Л.","room":"3/117","building":"Парк","subgroup":"1","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-18","dateFull":"18.09.2026"}]},"2026-09-07":{"weekBegin":"2026-09-07","heading":"Расписание  на неделю c 07.09.26","lastUpdate":"2026-09-09 10:37:50","days":[{"abbr":"ПН","name":"Понедельник","date":"07.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-07","dateFull":"07.09.2026"},{"abbr":"ВТ","name":"Вторник","date":"08.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МехМатИКонстр","type":"ЛК","teacher":"Мороз А.А.","room":"4/301","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"Философия","type":"СЗ","teacher":"Чеб Л.Д.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ФизКультура","type":"ЛК","teacher":"Булыга И.С.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"4/306","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-08","dateFull":"08.09.2026"},{"abbr":"СР","name":"Среда","date":"09.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВысшМатематика","type":"ПЗ","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ТеорМех","type":"ЛК","teacher":"Рогозина Е.В.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/401","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"4/404","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"1/401","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-09","dateFull":"09.09.2026"},{"abbr":"ЧТ","name":"Четверг","date":"10.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ТехнолФОбрИздКНазн","type":"ЛК","teacher":"Литвинович Т.П.","room":"4/212","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"4/313","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-10","dateFull":"10.09.2026"},{"abbr":"ПТ","name":"Пятница","date":"11.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Политология","type":"ЛК","teacher":"Демидович А.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-11","dateFull":"11.09.2026"}]},"2026-08-31":{"weekBegin":"2026-08-31","heading":"Расписание  на неделю c 31.08.26","lastUpdate":"2026-09-08 08:36:34","days":[{"abbr":"ВТ","name":"Вторник","date":"01.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ОрганичХимия","type":"ЛК","teacher":"Приходько С.Л.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[{"subjectRaw":"ИнфЧас","type":"ПЗ","teacher":"Бушкевич Р.В.","room":"4/317","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-08-31","dateFull":"31.08.2026"},{"abbr":"СР","name":"Среда","date":"02.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Зубрицкая Л.С.","room":"4/401","building":"Парк","subgroup":"1","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Гребень Т.М.","room":"4/404","building":"Парк","subgroup":"2","note":"англ","replacement":false},{"subjectRaw":"ИнострЯзык","type":"ПЗ","teacher":"Дырда Ж.Н.","room":"1/401","building":"Парк","subgroup":"3","note":"нем","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-01","dateFull":"01.09.2026"},{"abbr":"ЧТ","name":"Четверг","date":"03.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/206","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"МатАддитСинтеза","type":"ЛК","teacher":"Богданович И.А.","room":"3/206","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Философия","type":"ЛК","teacher":"Чеб Л.Д.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-02","dateFull":"02.09.2026"},{"abbr":"ПТ","name":"Пятница","date":"04.09","slots":[{"n":1,"time":"8:00–9:25","lessons":[{"subjectRaw":"ВысшМатематика","type":"ЛК","teacher":"Бруй И.Н.","room":"4/202","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":2,"time":"9:35–11:00","lessons":[{"subjectRaw":"ФизКультура","type":"ПЗ","teacher":"Шило О.В","room":"","building":"","subgroup":"","note":"","replacement":false}]},{"n":3,"time":"11:30–12:55","lessons":[{"subjectRaw":"ВОВ/Факультатив","type":"ЛК","teacher":"Вируцкая С.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":4,"time":"13:05–14:30","lessons":[{"subjectRaw":"Политология","type":"ЛК","teacher":"Демидович А.В.","room":"4/214","building":"Парк","subgroup":"","note":"","replacement":false}]},{"n":5,"time":"14:40–16:05","lessons":[]},{"n":6,"time":"16:25–17:50","lessons":[]},{"n":7,"time":"18:00–19:25","lessons":[]},{"n":8,"time":"19:35–21:00","lessons":[]}],"iso":"2026-09-03","dateFull":"03.09.2026"}]}}}}</script>
+<script>
+"use strict";
+/* ================= boot data ================= */
+const BOOT = JSON.parse(document.getElementById('snapshot').textContent);
+const GROUPS = BOOT.groups;
+const GMAP = {}; GROUPS.forEach(g=>GMAP[g.code]=g);
+const DEFAULT_GROUP = BOOT.defaultGroup;
+
+/* ================= constants ================= */
+const SRC_URL = 'https://rasp.barsu.by/stud.php';
+const DAY_NAMES = {ПН:'Понедельник',ВТ:'Вторник',СР:'Среда',ЧТ:'Четверг',ПТ:'Пятница',СБ:'Суббота',ВС:'Воскресенье'};
+const DAY_ORDER = ['ПН','ВТ','СР','ЧТ','ПТ','СБ'];
+const TYPE_NAMES = {ЛК:'лекция',ЛЗ:'лабораторное занятие',ПЗ:'практическое занятие',СЗ:'семинарское занятие',ЛР:'лабораторная работа'};
+const FAC_SHORT = {
+  'Инженерный факультет':'Инженерный',
+  'Факультет экономики и права':'Экономики и права',
+  'Факультет педагогики и психологии':'Педагогики и психологии',
+  'Лингвистический факультет':'Лингвистический',
+  'Институт повышения квалификации и переподготовка':'ИПКиП'
+};
+const FAC_ORDER = ['Инженерный факультет','Факультет экономики и права','Факультет педагогики и психологии','Лингвистический факультет','Институт повышения квалификации и переподготовка',''];
+const EXPAND = {
+  'ФизКультура':'Физическая культура','ФизКульт(Ф)':'Физическая культура (факультатив)',
+  'ИнострЯзык':'Иностранный язык','ИнфЧас':'Информационный час','ПрактикаРечи':'Практика речи',
+  'ВОВ/Факультатив':'История Великой Отечественной войны / факультатив',
+  'Математика':'Математика','Философия':'Философия','Физика':'Физика','Педагогика':'Педагогика','Психология':'Психология',
+  'ПУПР 2-ойИнЯз':'Практика устной и письменной речи 2-го иностранного языка',
+  'РусскЯз/ИнЯз':'Русский язык / иностранный язык','РусскЯзык':'Русский язык','БелЯзык':'Белорусский язык',
+  'БелЯзык/ПрофЛ':'Белорусский язык (профессиональная лексика)',
+  'БезопЖизнедЧел':'Безопасность жизнедеятельности человека',
+  'ПрофОриенИнЯз(рус)':'Профессионально-ориентированный иностранный язык (русский)',
+  'ИстБелГосударств':'История белорусской государственности','ИстГосИПрБел':'История государства и права Беларуси',
+  'МатАддитСинтеза':'Материалы аддитивного синтеза',
+  'ТехнолФОбрИздКНазн':'Технология формообразования изделий конструкционного назначения',
+  'Грамматика':'Грамматика','Граммат2-ойИнЯз':'Грамматика 2-го иностранного языка',
+  'ВысшМатематика':'Высшая математика','МатАнализ':'Математический анализ',
+  'ЛинАлгИАналитГеометр':'Линейная алгебра и аналитическая геометрия',
+  'ИнфТехнолОбраз':'Информационные технологии в образовании','ИнфТехнологии':'Информационные технологии',
+  'ОрганичХимия':'Органическая химия','Биохимия':'Биохимия','Анатомия':'Анатомия','Биомеханика':'Биомеханика',
+  'ГимнастикаМП':'Гимнастика и методика преподавания','ЛегкАтлетМП':'Лёгкая атлетика и методика преподавания',
+  'ПлаваниеМП':'Плавание и методика преподавания','ЛФКиМассаж':'Лечебная физкультура и массаж',
+  'КонстПраво':'Конституционное право','РимскЧастнПраво':'Римское частное право','ГраждПроцесс':'Гражданский процесс',
+  'УголПроцесс':'Уголовный процесс','ОснЛатТерминалог':'Основы латинской терминологии',
+  'СоцПсихология':'Социальная психология','ОбщПсихология':'Общая психология','Психодиагностик':'Психодиагностика',
+  'ПедПсихология':'Педагогическая психология','Социология':'Социология','Конфликтология':'Конфликтология',
+  'ВведЯзыкознание':'Введение в языкознание','ЯзыкДеловОбщения':'Язык делового общения',
+  'Фонетика2-йИнЯз':'Фонетика 2-го иностранного языка','Фонетика':'Фонетика',
+  'МПИнЯз':'Методика преподавания иностранного языка','МПИнЯзыка':'Методика преподавания иностранного языка',
+  'КомпМоделИИнжАн':'Компьютерное моделирование и инженерный анализ',
+  'МехМатИКонстр':'Механика материалов и конструкций','МехМат':'Механика материалов','ТеорМех':'Теоретическая механика',
+  'ЭтикаЭстетика':'Этика и эстетика','Политология':'Политология','Информатика':'Информатика',
+  'АХД':'Анализ хозяйственной деятельности','ИнжГрафика':'Инженерная графика',
+  'НачГеомИнжГраф':'Начертательная геометрия и инженерная графика',
+  'ЭлектротехнИЭл':'Электротехника и электроника','ОснМенеджм':'Основы менеджмента',
+  'ОргРабОдаренДетьми':'Организация работы с одарёнными детьми','ФилосМетНауки':'Философия и методология науки',
+  'НормТочнТехнИзм':'Нормирование точности и технические измерения',
+  'ТиПрПсихолТренинг':'Теория и практика психологического тренинга','МаркУслуг':'Маркетинг услуг',
+  'КризиснПсихол':'Кризисная психология','ДеталиМашин':'Детали машин','ОхранаТруда':'Охрана труда',
+  'ОбрТехнологии':'Образовательные технологии','ОснАлгИПрогр':'Основы алгоритмизации и программирования',
+  'ПрогрСетПрил':'Программирование сетевых приложений','МашОбучКомпЗрение':'Машинное обучение и компьютерное зрение',
+  'РазвИгрДеятДДВ':'Развитие игровой деятельности детей дошкольного возраста',
+  'ТеорОснМатемРазвДДВ':'Теоретические основы математического развития детей дошкольного возраста',
+  'БухгУпрУчёт':'Бухгалтерский управленческий учёт','Практ по 2-му ин.яз':'Практика по 2-му иностранному языку'
+};
+const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const PROXY_CHAIN = [
+  {name:'allorigins', post:u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`},
+  {name:'cors.lol',   post:u=>`https://api.cors.lol/?url=${encodeURIComponent(u)}`},
+  {name:'corsproxy',  post:u=>`https://corsproxy.io/?url=${encodeURIComponent(u)}`},
+  {name:'corsfix',    post:u=>`https://proxy.corsfix.com/?url=${encodeURIComponent(u)}`}
+];
+
+/* ================= state ================= */
+const memCache = {};
+const state = {
+  group: DEFAULT_GROUP,
+  groupMeta: null,        // {group,faculty,speciality,fetchedAt,...}
+  schedules: {},
+  weeks: [...(BOOT.weeksAvailable||[])],
+  weekISO: null,
+  dayAbbr: null,
+  source: 'snap',
+  fetchedAt: BOOT.fetchedAt || '',
+  universityUpdated: '',
+  iframeSubmittedFor: null,
+  loading: false
+};
+function lsKey(code){return 'bargu_sched_'+code+'_v2';}
+function publishedWeeksGlobal(){
+  const s=new Set();
+  GROUPS.forEach(g=>(g.weeks||[]).forEach(w=>s.add(w)));
+  return s;
+}
+const PUBLISHED = publishedWeeksGlobal();
+
+/* ================= time helpers (Europe/Minsk) ================= */
+function minskParts(d=new Date()){
+  const f = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Minsk',hour12:false,
+    year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',weekday:'short'});
+  const p = {}; for (const x of f.formatToParts(d)) p[x.type]=x.value;
+  const wdMap = {Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:0};
+  return {y:+p.year,m:+p.month,d:+p.day,h:(+p.hour)%24,min:+p.minute,sec:+p.second,wd:wdMap[p.weekday]??d.getDay()};
+}
+function minskISO(d=new Date()){const p=minskParts(d);return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;}
+function mondayOf(iso){const [y,m,d]=iso.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const wd=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-wd);return dt.toISOString().slice(0,10);}
+function addDays(iso,n){const [y,m,d]=iso.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d+n));return dt.toISOString().slice(0,10);}
+function parseHM(s){const [h,m]=s.split(':').map(Number);return h*60+m;}
+function minutesNowMinsk(){const p=minskParts();return p.h*60+p.min+p.sec/60;}
+
+/* ================= formatting ================= */
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function prettyGroup(code){return code.replace(/^([А-Яа-яA-Za-zЁё]+)(\d)/,'$1-$2');}
+function weekRangeLabel(iso){
+  const [y,m,d]=iso.split('-').map(Number);
+  const end=new Date(Date.UTC(y,m-1,d+6));
+  const same = end.getUTCMonth()===m-1;
+  return same
+    ? `${d}–${end.getUTCDate()} ${MONTHS_GEN[m-1]} ${end.getUTCFullYear()}`
+    : `${d} ${MONTHS_GEN[m-1]} – ${end.getUTCDate()} ${MONTHS_GEN[end.getUTCMonth()]} ${end.getUTCFullYear()}`;
+}
+function shortDate(iso){const [y,m,d]=iso.split('-').map(Number);return `${d}.${String(m).padStart(2,'0')}`;}
+function subjectFull(raw){raw=(raw||'').replace(/\s+/g,' ').trim();return EXPAND[raw]||raw;}
+function typeClass(t){return {ЛК:'lk',ЛЗ:'lz',ПЗ:'pz',СЗ:'sz'}[t]||'oth';}
+function typeTitle(t){return TYPE_NAMES[t]||t;}
+function plural(n,a,b,c){const n10=n%10,n100=n%100;return n10===1&&n100!==11?a:(n10>=2&&n10<=4&&(n100<12||n100>14)?b:c);}
+
+/* ================= parser (rasp.barsu.by HTML) ================= */
+function stripTags(s){
+  return s.replace(/<img[^>]*leg[^>]*>/gi,' [ЗАМЕНА] ')
+          .replace(/<img[^>]*>/gi,' ')
+          .replace(/<br\s*\/?>/gi,'\n')
+          .replace(/<[^>]+>/g,' ')
+          .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#039;/g,"'");
+}
+function fillRoom(cur,room,rest){
+  cur.room=room.replace(/\s+/g,'');
+  const pg=rest.match(/пг\s*:?\s*(\d+)/i);
+  if(pg){cur.subgroup=pg[1];rest=rest.replace(pg[0],' ');}
+  const parts=rest.replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
+  if(parts.length){cur.building=parts[0];const extra=parts.slice(1).join(' ');if(extra)cur.note=(cur.note?cur.note+' ':'')+extra;}
+}
+function parseContent(htmlCell){
+  const lines=stripTags(htmlCell).split('\n').map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean);
+  const lessons=[];let cur=null;
+  const startRe=/^(\[ЗАМЕНА\]\s*)?(.+?)\s+-\s+(Экзамен|Зачет|Зач|Экз|ЛК|ЛЗ|ПЗ|СЗ|ЛР|УЭК|КП|КР|СКР)(?=\s|$)\s*(.*)$/i;
+  const roomRe=/^(\d+\s*\/\s*\d+[а-яa-z]?)\s*(.*)$/i;
+  for(let line of lines){
+    const m=line.match(startRe);
+    if(m){
+      cur={subjectRaw:m[2].trim(),type:m[3].toUpperCase(),teacher:'',room:'',building:'',subgroup:'',note:'',replacement:!!m[1]};
+      lessons.push(cur);
+      const tail=(m[4]||'').trim();
+      if(!tail)continue;
+      line=tail;
+    }
+    if(!cur)continue;
+    if(line.includes('[ЗАМЕНА]')){cur.replacement=true;line=line.replace('[ЗАМЕНА]','').trim();if(!line)continue;}
+    const rm=line.match(roomRe);
+    if(!cur.teacher){ if(rm)fillRoom(cur,rm[1],rm[2]); else cur.teacher=line; continue; }
+    if(rm&&!cur.room)fillRoom(cur,rm[1],rm[2]);
+    else cur.note=(cur.note?cur.note+' ':'')+line;
+  }
+  return lessons;
+}
+function parseScheduleHTML(pageHTML,mondayISO){
+  const hm=pageHTML.match(/Расписание\s+на\s+неделю[^<]*/);
+  if(!hm)return null;
+  const i=hm.index;
+  const tStart=pageHTML.indexOf('<table',i);
+  const tEnd=pageHTML.indexOf('</table>',tStart);
+  if(tStart<0||tEnd<0)return null;
+  let table=pageHTML.slice(tStart,tEnd);
+  table=table.replace(/(<tbody[^>]*>)\s*(<td[^>]*rowspan)/i,'$1<tr>$2');
+  const rows=table.match(/<tr[\s\S]*?<\/tr>/g)||[];
+  const um=pageHTML.match(/Последнее\s+обновление\s*([0-9][0-9\- :]*[0-9])/);
+  const out={weekBegin:mondayISO,heading:hm[0].trim(),lastUpdate:um?um[1].trim():'',days:[]};
+  let cur=null,slotN=0;
+  const timeRe=/^\s*(\d{1,2}[.,]\d{2})\s*-\s*(\d{1,2}[.,]\d{2})\s*$/;
+  const norm=t=>t.replace(',', '.').replace('.', ':');
+  for(const row of rows){
+    const cells=row.match(/<t[dh][^>]*>[\s\S]*?<\/t[dh]>/g)||[];
+    if(!cells.length)continue;
+    let idx=0;
+    if(row.includes('rowspan=9')){
+      const abbr=stripTags(cells[0]).trim().toUpperCase();
+      if(DAY_NAMES[abbr]){cur={abbr,name:DAY_NAMES[abbr],date:stripTags(cells[1]||'').trim(),slots:[]};out.days.push(cur);slotN=0;}
+      idx=2;
+    }
+    const rest=cells.slice(idx);
+    if(rest.length&&cur){
+      const tm=stripTags(rest[0]).match(timeRe);
+      if(tm){
+        slotN++;
+        cur.slots.push({n:slotN,time:`${norm(tm[1])}–${norm(tm[2])}`,lessons:parseContent(rest[1]||'')});
+      }
+    }
+  }
+  out.days.forEach((d,k)=>{d.iso=addDays(mondayISO,k);d.dateFull=d.iso.split('-').reverse().join('.');});
+  return out.days.length?out:null;
+}
+function parseWeekList(pageHTML){
+  const m=pageHTML.match(/name="weekbegindate"[\s\S]*?<\/select>/);
+  if(!m)return null;
+  return [...m[0].matchAll(/<option value='(\d{4}-\d{2}-\d{2})'/g)].map(x=>x[1]);
+}
+
+/* ================= persistence ================= */
+function loadLs(code){try{const raw=localStorage.getItem(lsKey(code));return raw?JSON.parse(raw):null;}catch(e){return null;}}
+function saveLs(code){
+  try{localStorage.setItem(lsKey(code),JSON.stringify({
+    fetchedAt:state.fetchedAt,schedules:state.schedules,universityUpdated:state.universityUpdated
+  }));}catch(e){}
+}
+
+/* ================= group data loading ================= */
+async function ensureGroup(code){
+  if(memCache[code])return memCache[code];
+  const ls=loadLs(code);
+  if(code===DEFAULT_GROUP&&BOOT.defaultData){
+    let data=BOOT.defaultData;
+    if(ls&&ls.fetchedAt>(data.meta?.fetchedAt||'')) data={meta:data.meta,schedules:ls.schedules,ls:true};
+    memCache[code]=data;return data;
+  }
+  if(ls&&ls.schedules&&Object.keys(ls.schedules).length){
+    const rec=GMAP[code];
+    memCache[code]={meta:{group:code,faculty:rec?.faculty||'',speciality:rec?.speciality||'',fetchedAt:ls.fetchedAt},schedules:ls.schedules,ls:true};
+    return memCache[code];
+  }
+  const rec=GMAP[code];
+  if(!rec)throw new Error('unknown group '+code);
+  const r=await fetch(rec.file,{cache:'no-cache'});
+  if(!r.ok)throw new Error('http '+r.status);
+  const data=await r.json();
+  // merge ls if newer
+  if(ls&&ls.fetchedAt>(data.meta?.fetchedAt||'')){
+    data.schedules=Object.assign({},data.schedules,ls.schedules);
+    data.meta.fetchedAt=ls.fetchedAt;
+    data.ls=true;
+  }
+  memCache[code]=data;
+  return data;
+}
+
+/* ================= live update ================= */
+function postBody(code,week){
+  const rec=GMAP[code]||{};
+  return new URLSearchParams({
+    faculty:rec.faculty||'',speciality:rec.speciality||'',groups:code,
+    weekbegindate:week,go:'Показать'
+  }).toString();
+}
+async function fetchViaChain(url,{method='POST',body=null,timeout=9000}={}){
+  for(const p of PROXY_CHAIN){
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),timeout);
+    try{
+      const r=await fetch(p.post(url),{method,body,signal:ctrl.signal,
+        headers:body?{'Content-Type':'application/x-www-form-urlencoded'}:undefined});
+      clearTimeout(t);
+      if(!r.ok)continue;
+      const txt=await r.text();
+      if(txt&&txt.length>2000)return {txt,via:p.name};
+    }catch(e){clearTimeout(t);}
+  }
+  return null;
+}
+async function updateLive(manual=false,targetWeek=null){
+  const code=state.group;
+  if(manual){document.getElementById('refreshBtn').classList.add('spinning');setStatus('busy','обновляю…');}
+  let got=null;
+  try{
+    const listRes=await fetchViaChain(SRC_URL,{method:'GET',timeout:9000});
+    if(listRes){
+      const wl=parseWeekList(listRes.txt);
+      if(wl&&wl.length)state.weeks=[...new Set([...wl,...state.weeks])];
+    }
+    const today=minskISO();
+    const targets=[...new Set([targetWeek,mondayOf(today),state.weekISO].filter(Boolean))];
+    for(const w of targets){
+      const res=await fetchViaChain(SRC_URL,{method:'POST',body:postBody(code,w),timeout:11000});
+      if(res&&/Расписание\s+на\s+неделю/.test(res.txt)){
+        const parsed=parseScheduleHTML(res.txt,w);
+        if(parsed){state.schedules[w]=parsed;got={w,via:res.via};
+          const rec=GMAP[code];if(rec){rec.has=true;if(!rec.weeks.includes(w))rec.weeks.push(w);}
+        }
+      }
+    }
+  }catch(e){}
+  if(got){
+    state.source='live';
+    state.fetchedAt=new Date().toISOString().slice(0,16).replace('T',' ');
+    const u=state.schedules[got.w]?.lastUpdate;if(u&&u>state.universityUpdated)state.universityUpdated=u;
+    if(memCache[code])memCache[code].schedules=state.schedules;
+    saveLs(code);renderAll();
+    if(manual)toast('✅','Живые данные получены',prettyGroup(code)+' · rasp.barsu.by через реле '+got.via);
+    else setStatus('live','live');
+  }else if(manual){
+    const label=state.source==='cache'?'кэш от '+state.fetchedAt:'снимок от '+state.fetchedAt;
+    toast('📡','Сервер расписания не ответил через реле','Прямые запросы блокирует CORS университета. Показан '+label+'. Живые данные — в официальном фрейме ниже.');
+    renderStatusFromSource();
+  }
+  document.getElementById('refreshBtn').classList.remove('spinning');
+}
+
+/* ================= status ================= */
+function setStatus(s,text){
+  document.getElementById('statusChip').dataset.s=s;
+  document.getElementById('statusText').textContent=text;
+}
+function renderStatusFromSource(){
+  if(state.loading){setStatus('load','загрузка…');return;}
+  if(state.source==='live')setStatus('live','live');
+  else if(state.source==='cache')setStatus('cache','кэш · '+String(state.fetchedAt).slice(5,16));
+  else setStatus('snap','снимок · '+String(state.fetchedAt).slice(5,16));
+}
+
+/* ================= toasts ================= */
+function toast(icon,title,sub){
+  const box=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast glass';
+  el.innerHTML=`<span class="ti">${icon}</span><span>${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</span>`;
+  box.appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400);},5200);
+}
+
+/* ================= group picker ================= */
+let pickerFac='';
+function renderFacTabs(){
+  const box=document.getElementById('facTabs');
+  const facs=[...new Set(GROUPS.map(g=>g.faculty))].sort((a,b)=>(FAC_ORDER.indexOf(a)+99)%99-(FAC_ORDER.indexOf(b)+99)%99);
+  const uniq=FAC_ORDER.filter(f=>facs.includes(f)).concat(facs.filter(f=>!FAC_ORDER.includes(f)));
+  box.innerHTML='';
+  const mk=(label,val)=>{
+    const b=document.createElement('button');
+    b.className='fac-tab'+(pickerFac===val?' on':'');
+    b.textContent=label;
+    b.onclick=()=>{pickerFac=val;renderFacTabs();renderGroupGrid();};
+    box.appendChild(b);
+  };
+  mk('Все','');
+  uniq.forEach(f=>mk(FAC_SHORT[f]||'Прочее',f));
+}
+function renderGroupGrid(){
+  const box=document.getElementById('groupScroll');
+  const q=(document.getElementById('groupSearch').value||'').toLowerCase().trim();
+  box.innerHTML='';
+  let total=0;
+  const facs=[...new Set(GROUPS.map(g=>g.faculty))].sort((a,b)=>{
+    const ia=FAC_ORDER.indexOf(a),ib=FAC_ORDER.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  for(const f of facs){
+    if(pickerFac&&f!==pickerFac)continue;
+    const gs=GROUPS.filter(g=>g.faculty===f&&(
+      !q||g.code.toLowerCase().includes(q)||(g.speciality||'').toLowerCase().includes(q)
+    ));
+    if(!gs.length)continue;
+    total+=gs.length;
+    const sec=document.createElement('div');sec.className='fac-sec';
+    sec.innerHTML=`<h4>${esc(FAC_SHORT[f]||'Прочее')} <span style="opacity:.6">· ${gs.length}</span></h4>`;
+    const grid=document.createElement('div');grid.className='group-grid';
+    gs.forEach(g=>{
+      const b=document.createElement('button');
+      b.className='gchip'+(g.code===state.group?' sel':'');
+      b.title=(g.speciality||'')+(g.has?'\nЕсть занятия на текущей неделе':'\nНа текущей неделе занятий нет / не опубликовано');
+      b.innerHTML=`<b>${esc(prettyGroup(g.code))}</b><span class="cdot${g.has?' has':''}"></span>`;
+      b.onclick=()=>{closeModal();if(g.code!==state.group)selectGroup(g.code);};
+      grid.appendChild(b);
+    });
+    sec.appendChild(grid);box.appendChild(sec);
+  }
+  if(!total)box.innerHTML='<div class="no-results">Ничего не найдено 🤷</div>';
+  document.getElementById('modalCount').textContent=`${GROUPS.length} ${plural(GROUPS.length,'группа','группы','групп')} · ${GROUPS.filter(g=>g.has).length} с занятиями на этой неделе`;
+}
+function openModal(){
+  document.getElementById('groupModal').classList.add('show');
+  document.body.style.overflow='hidden';
+  renderFacTabs();renderGroupGrid();
+  setTimeout(()=>document.getElementById('groupSearch').focus(),80);
+}
+function closeModal(){
+  document.getElementById('groupModal').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+/* ================= routing ================= */
+function setHash(){
+  const h=`#${encodeURIComponent(state.group)}${state.weekISO?'/'+state.weekISO:''}${state.dayAbbr?'/'+state.dayAbbr:''}`;
+  if(location.hash!==h)history.replaceState(null,'',h);
+}
+function parseHash(){
+  const h=decodeURIComponent(location.hash.replace(/^#/,''));
+  if(!h)return null;
+  const p=h.split('/');
+  return {g:p[0]||null,w:p[1]||null,d:p[2]||null};
+}
+
+/* ================= week / day selection ================= */
+function bestDefaultWeek(){
+  const today=minskISO();
+  const have=Object.keys(state.schedules);
+  const pub=have.filter(w=>w<=today).sort();
+  if(pub.length)return pub[pub.length-1];
+  if(have.length)return have.sort()[have.length-1];
+  const cw=mondayOf(today);
+  if(state.weeks.includes(cw))return cw;
+  return state.weeks.find(w=>w<=today)||state.weeks[0]||cw;
+}
+function renderWeekMenu(){
+  const menu=document.getElementById('weekMenu');
+  menu.innerHTML='';
+  const today=minskISO();
+  for(const w of state.weeks){
+    const has=!!state.schedules[w];
+    const b=document.createElement('button');
+    b.className=has&&w===state.weekISO?'sel':(w===state.weekISO?'sel':'');
+    const tag=has?['ok','есть']:(PUBLISHED.has(w)?['mid','нет данных']:['no','не опубл.']);
+    b.innerHTML=`<span>${esc(weekRangeLabel(w))}${w===mondayOf(today)?' · <b style="color:#4ade80">текущая</b>':''}</span>
+      <span class="tagx ${tag[0]}">${tag[1]}</span>`;
+    b.onclick=()=>{selectWeek(w);closeWeekMenu();};
+    menu.appendChild(b);
+  }
+}
+function renderWeekHeader(){
+  const w=state.weekISO;
+  document.getElementById('weekLabel').textContent=w?weekRangeLabel(w):'неделя';
+  const today=minskISO();
+  let sub='';
+  if(!state.schedules[w])sub=PUBLISHED.has(w)?'данные не загружены':'ещё не опубликовано';
+  else if(w===mondayOf(today))sub='текущая неделя';
+  else if(w>today)sub='предстоящая неделя';
+  else sub='прошедшая неделя';
+  document.getElementById('weekSub').textContent=sub;
+  const i=state.weeks.indexOf(w);
+  document.getElementById('nextWeek').style.visibility=i>0?'visible':'hidden';
+  document.getElementById('prevWeek').style.visibility=(i>=0&&i<state.weeks.length-1)?'visible':'hidden';
+}
+function openWeekMenu(){document.getElementById('weekMenu').classList.add('show');document.getElementById('weekTitle').classList.add('open');}
+function closeWeekMenu(){document.getElementById('weekMenu').classList.remove('show');document.getElementById('weekTitle').classList.remove('open');}
+function selectWeek(w){
+  state.weekISO=w;
+  const sch=state.schedules[w];
+  const today=minskISO();
+  if(sch){
+    const todayDay=sch.days.find(d=>d.iso===today);
+    const withLessons=sch.days.find(d=>d.slots.some(s=>s.lessons.length));
+    state.dayAbbr=(todayDay||(withLessons||sch.days[0])).abbr;
+  }else state.dayAbbr='ПН';
+  renderAll();setHash();submitIframe(true);
+  if(!sch&&PUBLISHED.has(w))updateLive(false,w); // try to pull it live
+}
+function shiftWeek(dir){
+  const i=state.weeks.indexOf(state.weekISO);
+  const j=i+dir;
+  if(j>=0&&j<state.weeks.length)selectWeek(state.weeks[j]);
+}
+
+/* ================= render: group chrome ================= */
+function renderGroupChrome(){
+  const code=state.group;
+  const rec=GMAP[code]||{};
+  const pretty=prettyGroup(code);
+  document.getElementById('groupBtnLabel').textContent=pretty;
+  const fac=rec.faculty||state.groupMeta?.faculty||'';
+  const spec=rec.speciality||state.groupMeta?.speciality||'';
+  const hpG=document.getElementById('hpGroup');if(hpG)hpG.textContent=pretty;
+  const hpS=document.getElementById('hpSpec');if(hpS)hpS.textContent=spec||'БарГУ';
+  document.getElementById('heroSub').innerHTML=
+    `${fac?`<b>${esc(fac)}</b> · `:''}данные подхватываются с официального сервиса <b>rasp.barsu.by</b>`;
+  document.getElementById('topSub').textContent=`${pretty}${fac?' · '+FAC_SHORT[fac]:''} · rasp.barsu.by`;
+  const digits=code.match(/\d+/);
+  document.getElementById('logoBox').textContent=digits?digits[0]:'БГ';
+  document.getElementById('footGroups').textContent=`${GROUPS.length} групп БарГУ · сейчас: ${pretty}`;
+  // iframe form fields
+  document.getElementById('ifFac').value=fac;
+  document.getElementById('ifSpec').value=spec;
+  document.getElementById('ifGroup').value=code;
+  const f2=document.getElementById('officialFormNew');
+  f2.innerHTML=`<input type="hidden" name="faculty" value="${esc(fac)}">
+    <input type="hidden" name="speciality" value="${esc(spec)}">
+    <input type="hidden" name="groups" value="${esc(code)}">
+    <input type="hidden" name="weekbegindate" id="ifWeek2" value="${esc(state.weekISO||'')}">
+    <input type="hidden" name="go" value="Показать">
+    <button type="submit" class="mini-btn"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>Официально ↗</button>`;
+}
+
+/* ================= render: days & schedule ================= */
+let segDragSuppress=false;
+function selectDayByEl(btn){
+  const seg=document.getElementById('daySeg');
+  const list=[...seg.querySelectorAll('button')];
+  const abbr=btn.getAttribute('data-abbr');
+  if(!abbr||abbr===state.dayAbbr){window._positionThumb&&window._positionThumb();return;}
+  const idx=list.indexOf(btn);
+  const curIdx=list.findIndex(b=>b.classList.contains('on'));
+  state.dayAbbr=abbr;
+  renderDays();
+  renderSchedule(idx>curIdx?1:-1);
+  window._positionThumb&&window._positionThumb();
+  setHash();
+}
+function attachSegDrag(){
+  const seg=document.getElementById('daySeg');
+  const thumb=document.getElementById('segThumb');
+  let pid=null,startX=0,startXPos=0,dragging=false;
+  const metrics=()=>[...seg.querySelectorAll('button')].map(b=>({el:b,left:b.offsetLeft-5,w:b.offsetWidth}));
+  const thumbX=()=>{const m=parseFloat((thumb.style.transform.match(/translateX\(([-\d.]+)px\)/)||[])[1]);return isNaN(m)?0:m;};
+  seg.addEventListener('pointerdown',e=>{
+    if(e.button!==undefined&&e.button>0)return;
+    const m=metrics();if(!m.length)return;
+    pid=e.pointerId;startX=e.clientX;dragging=false;
+    const cur=m.find(x=>x.el.classList.contains('on'))||m[0];
+    startXPos=cur.left;
+    try{seg.setPointerCapture(pid);}catch(_){}
+  });
+  seg.addEventListener('pointermove',e=>{
+    if(pid===null||e.pointerId!==pid)return;
+    const dx=e.clientX-startX;
+    if(!dragging&&Math.abs(dx)>6){dragging=true;segDragSuppress=true;seg.classList.add('dragging');}
+    if(!dragging)return;
+    const m=metrics();
+    const tw=thumb.offsetWidth;
+    const min=m[0].left, max=m[m.length-1].left+m[m.length-1].w-tw;
+    let x=startXPos+dx;
+    if(x<min)x=min+(x-min)*.35;          // rubber edge
+    if(x>max)x=max+(x-max)*.35;
+    thumb.style.transform=`translateX(${x}px) scaleX(1.07)`;
+    const center=x+tw/2;
+    let best=null,bd=1e9;
+    m.forEach(it=>{const d=Math.abs(it.left+it.w/2-center);if(d<bd){bd=d;best=it;}});
+    m.forEach(it=>it.el.classList.toggle('near',it.el===best.el));
+  });
+  const finish=e=>{
+    if(pid===null||e.pointerId!==pid)return;
+    pid=null;
+    const wasDragging=dragging;
+    dragging=false;
+    seg.classList.remove('dragging');
+    [...seg.querySelectorAll('button')].forEach(b=>b.classList.remove('near'));
+    if(wasDragging){
+      const m=metrics();
+      const center=thumbX()+thumb.offsetWidth/2;
+      let best=m[0],bd=1e9;
+      m.forEach(it=>{const d=Math.abs(it.left+it.w/2-center);if(d<bd){bd=d;best=it;}});
+      thumb.classList.add('settle');
+      setTimeout(()=>thumb.classList.remove('settle'),600);
+      selectDayByEl(best.el);
+      setTimeout(()=>{segDragSuppress=false;},80);
+    }else{
+      segDragSuppress=false;
+    }
+  };
+  seg.addEventListener('pointerup',finish);
+  seg.addEventListener('pointercancel',finish);
+}
+function renderDays(){
+  const seg=document.getElementById('daySeg');
+  const thumb=document.getElementById('segThumb');
+  [...seg.querySelectorAll('button')].forEach(b=>b.remove());
+  const sch=state.schedules[state.weekISO];
+  const abbrs=sch?sch.days.map(d=>d.abbr).filter(a=>DAY_ORDER.includes(a)):['ПН','ВТ','СР','ЧТ','ПТ'];
+  const today=minskISO();
+  abbrs.forEach(a=>{
+    const day=sch?sch.days.find(d=>d.abbr===a):null;
+    const b=document.createElement('button');
+    b.setAttribute('role','tab');
+    b.setAttribute('data-abbr',a);
+    b.className=(a===state.dayAbbr?'on ':'')+(day&&day.iso===today?'today':'');
+    b.innerHTML=`<b>${a}</b><i>${day?shortDate(day.iso):''}</i>`;
+    b.onclick=()=>{if(segDragSuppress)return;selectDayByEl(b);};
+    seg.appendChild(b);
+  });
+  function positionThumb(){
+    const on=seg.querySelector('button.on');
+    if(!on){thumb.style.width='0px';return;}
+    thumb.style.width=on.offsetWidth+'px';
+    thumb.style.transform=`translateX(${on.offsetLeft-5}px)`;
+  }
+  requestAnimationFrame(positionThumb);
+  window._positionThumb=positionThumb;
+}
+function lessonCard(l){
+  const chips=[];
+  if(l.teacher)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(l.teacher)}</span>`);
+  if(l.room)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1"/></svg>ауд. ${esc(l.room)}${l.building?' · '+esc(l.building):''}</span>`);
+  const lang=(l.note||'').match(/англ|нем|кит|фр|исп/i);
+  if(lang)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>${esc(lang[0])}</span>`);
+  const badges=[`<span class="badge ${typeClass(l.type)}" title="${esc(typeTitle(l.type))}">${esc(l.type)}</span>`];
+  if(l.subgroup)badges.push(`<span class="badge pg">пг ${esc(l.subgroup)}</span>`);
+  if(l.replacement)badges.push(`<span class="badge rep" title="Изменение в базовом расписании">замена</span>`);
+  const raw=(l.subjectRaw||'').replace(/\s+/g,' ').trim();
+  const full=subjectFull(raw);
+  return `<div class="lesson glass">
+    <div class="l-top">${badges.join('')}</div>
+    <h3 ${full!==raw?`title="${esc(raw)}"`:''}>${esc(full)}</h3>
+    ${full!==raw?`<div class="l-sub">${esc(raw)}</div>`:''}
+    <div class="l-meta">${chips.join('')}</div>
+  </div>`;
+}
+function swapAnim(box,dir){
+  if(!dir)return;
+  box.classList.remove('swap-l','swap-r');
+  void box.offsetWidth;
+  box.classList.add(dir>0?'swap-r':'swap-l');
+}
+function renderSchedule(dir=0){
+  const box=document.getElementById('dayContent');
+  const sch=state.schedules[state.weekISO];
+  if(!sch){
+    const published=PUBLISHED.has(state.weekISO);
+    box.innerHTML=`<div class="day-empty glass" style="margin-top:22px">
+      <div class="de-ico">${published?'📭':'🗓️'}</div>
+      <h3>${published?'Данные для этой недели не загружены':'Расписание ещё не опубликовано'}</h3>
+      <p>${published
+        ?`Для группы ${esc(prettyGroup(state.group))} эта неделя в снимке отсутствует. Попробуйте запросить её напрямую или откройте официальный фрейм ниже.`
+        :'Университет выкладывает расписание накануне недели (обычно в пятницу). Выберите другую неделю или загляните в официальный фрейм ниже.'}</p>
+      ${published?'<button class="mini-btn primary" onclick="updateLive(true, state.weekISO)">⚡ Запросить с rasp.barsu.by</button>':''}
+    </div>`;
+    swapAnim(box,dir);
+    return;
+  }
+  const day=sch.days.find(d=>d.abbr===state.dayAbbr)||sch.days[0];
+  if(!day){box.innerHTML='';return;}
+  const lessonsTotal=day.slots.reduce((a,s)=>a+s.lessons.length,0);
+  let head=`<div class="day-head"><h2>${esc(day.name)}</h2><span class="dh-date">${esc(day.dateFull||day.iso)}</span>
+    <span class="dh-count">${lessonsTotal?lessonsTotal+' '+plural(lessonsTotal,'пара','пары','пар'):'нет занятий'}</span></div>`;
+  if(!lessonsTotal){
+    box.innerHTML=head+`<div class="day-empty glass"><div class="de-ico">🌤️</div><h3>Выходной!</h3><p>В этот день занятий нет.</p></div>`;
+    swapAnim(box,dir);
+    return;
+  }
+  const today=minskISO();
+  const nowMin=minutesNowMinsk();
+  const isToday=day.iso===today&&state.weekISO===mondayOf(today);
+  const firstN=day.slots.find(s=>s.lessons.length)?.n||1;
+  const lastSlot=[...day.slots].reverse().find(s=>s.lessons.length);
+  const lastN=lastSlot?lastSlot.n:1;
+  let rows='',idx=0;
+  for(const s of day.slots){
+    if(s.n<firstN)continue;
+    if(s.n>lastN)break;
+    idx++;
+    const [t0,t1]=s.time.split('–');
+    let nowCls='',nowTag='';
+    if(isToday&&s.lessons.length){
+      const a=parseHM(t0),b=parseHM(t1);
+      if(nowMin>=a&&nowMin<b){nowCls=' now';nowTag='<span class="now-tag">идёт сейчас</span>';}
+    }
+    if(!s.lessons.length){
+      rows+=`<div class="slot-row" style="--i:${idx}">
+        <div class="slot-time"><div class="st-n">${s.n} пара</div><div class="st-t">${esc(s.time)}</div></div>
+        <div class="slot-empty">окно — свободное время</div></div>`;
+      continue;
+    }
+    const cards=s.lessons.map(lessonCard).join('');
+    rows+=`<div class="slot-row${nowCls}" style="--i:${idx}">
+      <div class="slot-time"><div class="st-n">${s.n} пара ${nowTag}</div><div class="st-t">${esc(s.time)}</div></div>
+      <div class="slot-body">${cards}</div></div>`;
+  }
+  const endT=lastSlot?lastSlot.time.split('–')[1]:'';
+  rows+=`<div class="free-time">после ${esc(endT)} — свободно ✨</div>`;
+  box.innerHTML=head+rows;
+  box.querySelectorAll('.slot-row').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation='';});
+  swapAnim(box,dir);
+}
+
+/* ================= next lesson ================= */
+function renderNext(){
+  const card=document.getElementById('nextCard');
+  const today=minskISO();
+  const curWeek=mondayOf(today);
+  const el={ico:document.getElementById('ncIco'),label:document.getElementById('ncLabel'),
+    title:document.getElementById('ncTitle'),meta:document.getElementById('ncMeta'),
+    count:document.getElementById('ncCount'),countL:document.getElementById('ncCountLabel')};
+  if(state.weekISO!==curWeek||!state.schedules[curWeek]){
+    const sch=state.schedules[state.weekISO];
+    const total=sch?sch.days.reduce((a,d)=>a+d.slots.reduce((b,s)=>b+s.lessons.length,0),0):0;
+    card.classList.remove('now');
+    el.ico.textContent=sch?'📊':'📭';
+    el.label.textContent='выбранная неделя';
+    el.title.textContent=sch?`${total} ${plural(total,'занятие','занятия','занятий')} за неделю`:'расписание не загружено';
+    el.meta.textContent=sch?weekRangeLabel(state.weekISO):'выберите неделю с данными или запросите её с сервера';
+    el.count.textContent=sch?total:'—';el.countL.textContent=sch?plural(total,'занятие','занятия','занятий'):'';
+    return;
+  }
+  const sch=state.schedules[curWeek];
+  const nowMin=minutesNowMinsk();
+  const p=minskParts();
+  let found=null,mode='next';
+  const dayNow=sch.days.find(d=>d.iso===today);
+  if(dayNow){
+    for(const s of dayNow.slots){
+      if(!s.lessons.length)continue;
+      const [a,b]=s.time.split('–').map(parseHM);
+      if(nowMin>=a&&nowMin<b){found={s,day:dayNow};mode='now';break;}
+      if(nowMin<a){found={s,day:dayNow};break;}
+    }
+  }
+  if(!found){
+    for(let k=1;k<=7;k++){
+      const iso=addDays(today,k);
+      if(iso>addDays(curWeek,6))break;
+      const d=sch.days.find(x=>x.iso===iso);
+      if(!d)continue;
+      const s=d.slots.find(x=>x.lessons.length);
+      if(s){found={s,day:d};break;}
+    }
+  }
+  if(!found){
+    card.classList.remove('now');
+    el.ico.textContent='🎉';el.label.textContent='эта неделя';
+    el.title.textContent='Занятий больше нет';
+    el.meta.textContent='Расписание текущей недели завершено';
+    el.count.textContent='—';el.countL.textContent='';
+    return;
+  }
+  const l=found.s.lessons[0];
+  const pgNote=found.s.lessons.length>1?` · по подгруппам`:'';
+  if(mode==='now'){
+    card.classList.add('now');
+    el.ico.textContent='🔴';el.label.textContent='идёт сейчас';
+    el.title.textContent=subjectFull(l.subjectRaw);
+    el.meta.textContent=`${l.type}${l.teacher?' · '+l.teacher:''}${l.room?' · ауд. '+l.room+(l.building?' ('+l.building+')':''):''}${pgNote} · до ${found.s.time.split('–')[1]}`;
+    const left=Math.max(0,parseHM(found.s.time.split('–')[1])-nowMin);
+    el.count.textContent=fmtDur(left);el.countL.textContent='до конца';
+  }else{
+    card.classList.remove('now');
+    const [a]=found.s.time.split('–').map(parseHM);
+    const dayDiff=Math.round((new Date(found.day.iso)-new Date(today))/86400000);
+    const mins=(dayDiff*1440+a)-nowMin;
+    el.ico.textContent='⏳';el.label.textContent=dayDiff===0?'сегодня · следующая пара':`${found.day.name.toLowerCase()} · следующая пара`;
+    el.title.textContent=subjectFull(l.subjectRaw);
+    el.meta.textContent=`${found.s.time.split('–')[0]} · ${l.type}${l.teacher?' · '+l.teacher:''}${l.room?' · ауд. '+l.room+(l.building?' ('+l.building+')':''):''}${pgNote}`;
+    el.count.textContent=fmtDur(mins);el.countL.textContent='до начала';
+  }
+}
+function fmtDur(mins){
+  mins=Math.max(0,Math.round(mins));
+  const h=Math.floor(mins/60),m=mins%60;
+  if(h>=24)return Math.floor(h/24)+' д';
+  if(h>0)return h+' ч '+String(m).padStart(2,'0')+' м';
+  return m+' мин';
+}
+
+/* ================= official iframe ================= */
+function submitIframe(force){
+  const w=state.weekISO;
+  if(!w)return;
+  if(!force&&state.iframeSubmittedFor===w+state.group)return;
+  state.iframeSubmittedFor=w+state.group;
+  document.getElementById('ifWeek').value=w;
+  const w2=document.getElementById('ifWeek2');if(w2)w2.value=w;
+  try{document.getElementById('officialForm').submit();}catch(e){}
+}
+
+/* ================= theme ================= */
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  try{localStorage.setItem('bargu_theme',t);}catch(e){}
+  document.getElementById('themeIcon').innerHTML=t==='light'
+    ?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4l1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+    :'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>';
+  document.querySelector('meta[name="theme-color"]').content=t==='light'?'#eef1f8':'#05070d';
+}
+
+/* ================= specular ================= */
+document.addEventListener('pointermove',e=>{
+  const card=e.target.closest?.('.glass');
+  if(!card)return;
+  const r=card.getBoundingClientRect();
+  card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+  card.style.setProperty('--my',(e.clientY-r.top)+'px');
+},{passive:true});
+
+/* ================= group switch ================= */
+async function selectGroup(code,{week=null,day=null}={}){
+  if(!GMAP[code])code=DEFAULT_GROUP;
+  state.group=code;
+  state.loading=true;
+  state.source='snap';
+  renderStatusFromSource();
+  renderGroupChrome();
+  try{
+    const data=await ensureGroup(code);
+    state.schedules=data.schedules||{};
+    state.groupMeta=data.meta||null;
+    state.fetchedAt=data.meta?.fetchedAt||BOOT.fetchedAt||'';
+    state.source=data.ls?'cache':'snap';
+    let u='';for(const w of Object.values(state.schedules))if((w.lastUpdate||'')>u)u=w.lastUpdate;
+    state.universityUpdated=u;
+    state.weeks=[...new Set([...(data.meta?.weeksAvailable||[]),...BOOT.weeksAvailable,...Object.keys(state.schedules)])].sort().reverse();
+  }catch(e){
+    state.schedules={};state.groupMeta=null;state.source='snap';
+    state.weeks=[...BOOT.weeksAvailable].sort().reverse();
+    toast('⚠️','Не удалось загрузить данные группы',String(e.message||e).slice(0,80));
+  }
+  state.loading=false;
+  // pick week/day
+  let w=week;
+  if(!w||!state.weeks.includes(w))w=bestDefaultWeek();
+  state.weekISO=w;
+  const sch=state.schedules[w];
+  if(day&&sch&&sch.days.some(d=>d.abbr===day))state.dayAbbr=day;
+  else if(sch){
+    const today=minskISO();
+    const td=sch.days.find(d=>d.iso===today);
+    const wl=sch.days.find(d=>d.slots.some(s=>s.lessons.length));
+    state.dayAbbr=(td||wl||sch.days[0]).abbr;
+  }else state.dayAbbr='ПН';
+  renderAll();setHash();submitIframe(true);
+}
+
+/* ================= glue ================= */
+function renderAll(){
+  renderGroupChrome();renderWeekHeader();renderWeekMenu();renderDays();renderSchedule();renderNext();renderStatusFromSource();renderFoot();
+}
+function renderFoot(){
+  const parts=[];
+  if(state.universityUpdated)parts.push('университет обновил: '+state.universityUpdated);
+  if(state.fetchedAt)parts.push('данные собраны: '+state.fetchedAt);
+  document.getElementById('footMeta').textContent=parts.join(' · ')||'—';
+  document.getElementById('modalFoot').textContent=`${GROUPS.length} групп · снимок данных: ${BOOT.fetchedAt||'—'} · источник: rasp.barsu.by`;
+}
+function init(){
+  let t=null;try{t=localStorage.getItem('bargu_theme');}catch(e){}
+  setTheme(t||((window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark'));
+  const h=parseHash();
+  const startGroup=(h&&h.g&&GMAP[h.g])?h.g:DEFAULT_GROUP;
+  // events
+  document.getElementById('groupBtn').onclick=openModal;
+  document.getElementById('heroPicker').onclick=openModal;
+  document.getElementById('modalClose').onclick=closeModal;
+  document.getElementById('groupModal').addEventListener('click',e=>{if(e.target.id==='groupModal')closeModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  document.getElementById('groupSearch').addEventListener('input',renderGroupGrid);
+  document.getElementById('weekBtn').onclick=e=>{e.stopPropagation();document.getElementById('weekMenu').classList.contains('show')?closeWeekMenu():openWeekMenu();};
+  document.addEventListener('click',e=>{if(!e.target.closest('#weekTitle'))closeWeekMenu();});
+  document.getElementById('prevWeek').onclick=()=>shiftWeek(+1);
+  document.getElementById('nextWeek').onclick=()=>shiftWeek(-1);
+  document.getElementById('refreshBtn').onclick=()=>updateLive(true);
+  document.getElementById('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+  const ph=document.getElementById('panelHead');
+  const togglePanel=()=>{const p=document.getElementById('officialPanel');p.classList.toggle('open');ph.setAttribute('aria-expanded',p.classList.contains('open'));};
+  ph.addEventListener('click',e=>{if(e.target.closest('form,button'))return;togglePanel();});
+  ph.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();togglePanel();}});
+  addEventListener('resize',()=>window._positionThumb&&window._positionThumb());
+  attachSegDrag();
+  addEventListener('hashchange',()=>{
+    const hh=parseHash();
+    if(hh&&hh.g&&GMAP[hh.g]&&hh.g!==state.group)selectGroup(hh.g,{week:hh.w,day:hh.d});
+  });
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  }else{
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+  }
+  // timers
+  setInterval(renderNext,30000);
+  setInterval(()=>{if(state.schedules[state.weekISO])renderSchedule();},60000);
+  setInterval(()=>updateLive(false),15*60*1000);
+  setTimeout(()=>updateLive(false),1500);
+  // start
+  selectGroup(startGroup,{week:h&&h.w?h.w:null,day:h&&h.d?h.d:null}).then(()=>{
+    setTimeout(()=>submitIframe(true),1200);
+  });
+}
+document.readyState==='loading'?addEventListener('DOMContentLoaded',init):init();
+</script>
+</body>
+</html>
