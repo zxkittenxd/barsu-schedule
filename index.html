@@ -179,6 +179,10 @@ h1 .grad{
   transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 .week-menu.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
+#weekNav{position:relative;z-index:500}
+#weekBackdrop{position:fixed;inset:0;background:rgba(5,8,20,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:400}
+#weekBackdrop.show{opacity:1;pointer-events:auto}
+
 .week-menu button{
   display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:0;border-radius:12px;
   background:transparent;color:var(--text);font:inherit;font-size:13.5px;cursor:pointer;text-align:left;transition:background .18s;
@@ -1012,8 +1016,8 @@ function renderWeekHeader(){
   document.getElementById('nextWeek').style.visibility=i>0?'visible':'hidden';
   document.getElementById('prevWeek').style.visibility=(i>=0&&i<state.weeks.length-1)?'visible':'hidden';
 }
-function openWeekMenu(){document.getElementById('weekMenu').classList.add('show');document.getElementById('weekTitle').classList.add('open');}
-function closeWeekMenu(){document.getElementById('weekMenu').classList.remove('show');document.getElementById('weekTitle').classList.remove('open');}
+function openWeekMenu(){document.getElementById('weekMenu').classList.add('show');document.getElementById('weekTitle').classList.add('open');document.getElementById('weekBackdrop').classList.add('show');}
+function closeWeekMenu(){document.getElementById('weekMenu').classList.remove('show');document.getElementById('weekTitle').classList.remove('open');document.getElementById('weekBackdrop').classList.remove('show');}
 function selectWeek(w){
   state.weekISO=w;
   const sch=state.schedules[w];
@@ -1413,7 +1417,7 @@ function init(){
   document.getElementById('groupModal').addEventListener('click',e=>{if(e.target.id==='groupModal')closeModal();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   document.getElementById('groupSearch').addEventListener('input',renderGroupGrid);
-  document.getElementById('weekBtn').onclick=e=>{e.stopPropagation();document.getElementById('weekMenu').classList.contains('show')?closeWeekMenu():openWeekMenu();};
+  document.getElementById('weekBtn').onclick=e=>{e.stopPropagation();document.getElementById('weekMenu').classList.contains('show')?closeWeekMenu():openWeekMenu();};document.getElementById('weekBackdrop').onclick=()=>closeWeekMenu();
   document.addEventListener('click',e=>{if(!e.target.closest('#weekTitle'))closeWeekMenu();});
   document.getElementById('prevWeek').onclick=()=>shiftWeek(+1);
   document.getElementById('nextWeek').onclick=()=>shiftWeek(-1);
@@ -1447,5 +1451,6 @@ function init(){
 }
 document.readyState==='loading'?addEventListener('DOMContentLoaded',init):init();
 </script>
+<div id="weekBackdrop"></div>
 </body>
 </html>
