@@ -179,6 +179,8 @@ h1 .grad{
   transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 .week-menu.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
+.week-menu{background:rgba(20,25,45,.94);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border-color:rgba(255,255,255,.18);box-shadow:0 18px 50px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+
 #weekNav{position:relative;z-index:500}
 #weekBackdrop{position:fixed;inset:0;background:rgba(5,8,20,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:400}
 #weekBackdrop.show{opacity:1;pointer-events:auto}
