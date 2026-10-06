@@ -1359,6 +1359,8 @@ function fmtDur(mins){
 
 /* ================= official iframe ================= */
 function submitIframe(force){
+  const panel=document.getElementById('officialPanel');
+  if(panel&&!panel.classList.contains('open'))return;
   const w=state.weekISO;
   if(!w)return;
   if(!force&&state.iframeSubmittedFor===w+state.group)return;
@@ -1467,7 +1469,7 @@ function init(){
   
   document.getElementById('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
   const ph=document.getElementById('panelHead');
-  const togglePanel=()=>{const p=document.getElementById('officialPanel');p.classList.toggle('open');ph.setAttribute('aria-expanded',p.classList.contains('open'));};
+  const togglePanel=()=>{const p=document.getElementById('officialPanel');p.classList.toggle('open');ph.setAttribute('aria-expanded',p.classList.contains('open'));if(p.classList.contains('open'))setTimeout(()=>submitIframe(true),200);};
   ph.addEventListener('click',e=>{if(e.target.closest('form,button'))return;togglePanel();});
   ph.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();togglePanel();}});
   addEventListener('resize',()=>window._positionThumb&&window._positionThumb());
