@@ -25,7 +25,7 @@
   --chip:rgba(255,255,255,.055);
   --radius:24px;
 }
-[data-theme="material"]{
+[data-theme="material-light"]{
   --bg:#f5f5f5; --text:#202124; --muted:#5f6368; --faint:#80868b;
   --glass:#ffffff; --glass-strong:#ffffff;
   --glass-border:rgba(0,0,0,.08); --glass-edge:rgba(255,255,255,.9);
@@ -35,8 +35,20 @@
   --seg-bg:#e8eaed; --seg-thumb:#d2e3fc;
   --chip:#f1f3f4; --radius:12px;
 }
-[data-theme="material"] .glass::before{display:none}
-[data-theme="material"] .glass{
+[data-theme="material-dark"]{
+  --bg:#121212; --text:#e8eaed; --muted:rgba(232,234,237,.65); --faint:rgba(232,234,237,.4);
+  --glass:#1e1e1e; --glass-strong:#2a2a2a;
+  --glass-border:rgba(255,255,255,.1); --glass-edge:rgba(255,255,255,.12);
+  --glass-shadow:0 2px 6px rgba(0,0,0,.5);
+  --specular:rgba(255,255,255,.05);
+  --blob-op:0; --blob-blend:normal; --grain-op:0;
+  --seg-bg:#303134; --seg-thumb:#5f6368;
+  --chip:#303134; --radius:12px;
+}
+[data-theme="material-light"] .glass::before,
+[data-theme="material-dark"] .glass::before{display:none}
+[data-theme="material-light"] .glass,
+[data-theme="material-dark"] .glass{
   -webkit-backdrop-filter:none;backdrop-filter:none;
   background:var(--glass);
 }
@@ -492,7 +504,8 @@ footer a:hover{color:var(--accent)}
     <div class="accent-row">
       <button class="mini-btn design-btn" data-t="dark" title="Liquid glass тёмная">🌟 Liquid dark</button>
       <button class="mini-btn design-btn" data-t="light" title="Liquid glass светлая">☀️ Liquid light</button>
-      <button class="mini-btn design-btn" data-t="material" title="Material UI">📦 Material</button>
+      <button class="mini-btn design-btn" data-t="material-light" title="Material UI светлая">☀️ Material</button>
+      <button class="mini-btn design-btn" data-t="material-dark" title="Material UI тёмная">🌙 Material</button>
     </div>
   </div>
 </header>
@@ -1397,10 +1410,10 @@ function submitIframe(force){
 function setTheme(t){
   document.documentElement.dataset.theme=t;
   try{localStorage.setItem('bargu_theme',t);}catch(e){}
-  document.getElementById('themeIcon').innerHTML=t==='light'
+  const isLight=(t==='light'||t==='material-light');document.getElementById('themeIcon').innerHTML=isLight
     ?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4l1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
     :'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>';
-  document.querySelector('meta[name="theme-color"]').content=t==='light'?'#eef1f8':'#05070d';
+  document.querySelector('meta[name="theme-color"]').content=(t==='light'||t==='material-light')?'#eef1f8':'#05070d';
 }
 
 /* ================= specular ================= */
@@ -1491,7 +1504,7 @@ function init(){
   document.getElementById('menuPanel').addEventListener('click',e=>e.stopPropagation());
   
   document.querySelectorAll('.design-btn').forEach(b=>b.onclick=e=>{e.stopPropagation();setTheme(b.dataset.t);try{localStorage.setItem('bargu_theme',b.dataset.t);}catch(_){}});
-  document.getElementById('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+  document.getElementById('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme||'dark';if(t==='material-dark'||t==='material-light')setTheme(t==='material-dark'?'material-light':'material-dark');else setTheme(t==='light'?'dark':'light');};
   const ph=document.getElementById('panelHead');
   const togglePanel=()=>{const p=document.getElementById('officialPanel');p.classList.toggle('open');ph.setAttribute('aria-expanded',p.classList.contains('open'));if(p.classList.contains('open'))setTimeout(()=>submitIframe(true),200);};
   ph.addEventListener('click',e=>{if(e.target.closest('form,button'))return;togglePanel();});
