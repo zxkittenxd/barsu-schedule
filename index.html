@@ -256,7 +256,7 @@ h1 .grad{
 .slot-row{display:flex;gap:14px;margin-bottom:12px;animation:cardIn .55s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*55ms)}
 @keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
 .slot-time{flex:none;width:92px;padding-top:20px;text-align:right}
-.slot-time .st-n{font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.08em}
+.slot-time .st-n{font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.08em;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .slot-time .st-t{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px;letter-spacing:-.01em}
 .slot-body{flex:1;min-width:0;display:grid;gap:10px}
 .lesson{padding:16px 18px;border-radius:20px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .35s;will-change:transform}
@@ -293,7 +293,7 @@ h1 .grad{
 .day-empty .mini-btn{margin-top:16px}
 .slot-row.now .slot-time .st-t{color:#4ade80}
 .slot-row.now .lesson{border-color:rgba(74,222,128,.45)}
-.now-tag{font-size:10px;font-weight:800;letter-spacing:.1em;color:#03110a;background:linear-gradient(120deg,#4ade80,#2dd4a7);padding:4px 10px;border-radius:999px;text-transform:uppercase;animation:breathe 2.6s infinite;flex:none}
+.now-tag{font-size:10px;font-weight:800;letter-spacing:.1em;color:#03110a;background:linear-gradient(120deg,#4ade80,#2dd4a7);padding:4px 10px;border-radius:999px;text-transform:uppercase;animation:breathe 2.6s infinite;flex:none;white-space:nowrap}
 .panel-head{display:flex;align-items:center;gap:14px;padding:18px 22px;cursor:pointer;user-select:none}
 .panel-head .ph-ico{width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:20px;
   background:linear-gradient(135deg,rgba(45,212,167,.22),rgba(127,176,255,.22));border:1px solid var(--glass-border)}
@@ -1208,7 +1208,7 @@ function renderSchedule(dir=0){
   }
   const day=sch.days.find(d=>d.abbr===state.dayAbbr)||sch.days[0];
   if(!day){box.innerHTML='';return;}
-  const lessonsTotal=day.slots.reduce((a,s)=>a+s.lessons.length,0);
+  const lessonsTotal=day.slots.filter(s=>s.lessons.length).length;
   let head=`<div class="day-head"><h2>${esc(day.name)}</h2><span class="dh-date">${esc(day.dateFull||day.iso)}</span>
     <span class="dh-count">${lessonsTotal?lessonsTotal+' '+plural(lessonsTotal,'пара','пары','пар'):'нет занятий'}</span></div>`;
   if(!lessonsTotal){
@@ -1451,7 +1451,7 @@ function init(){
   // timers
   setInterval(renderNext,30000);
   setInterval(()=>{if(state.schedules[state.weekISO])renderSchedule();},60000);
-  setInterval(()=>updateLive(false),15*60*1000);
+  setInterval(()=>updateLive(false),30*60*1000);
   setTimeout(()=>updateLive(false),1500);
   // start
   selectGroup(startGroup,{week:h&&h.w?h.w:null,day:h&&h.d?h.d:null}).then(()=>{
