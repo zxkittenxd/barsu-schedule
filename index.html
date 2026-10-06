@@ -490,6 +490,7 @@ footer a:hover{color:var(--accent)}
         <div class="nc-label" id="ncLabel">следующая пара</div>
         <div class="nc-title" id="ncTitle">…</div>
         <div class="nc-meta" id="ncMeta"></div>
+        <div class="nc-meta" id="ncBreak" style="margin-top:4px;color:var(--muted)"></div>
       </div>
       <div class="nc-count"><b id="ncCount">—</b><span id="ncCountLabel">до начала</span></div>
     </div>
@@ -1309,8 +1310,14 @@ function renderNext(){
     el.meta.textContent=`${l.type}${l.teacher?' · '+l.teacher:''}${l.room?' · ауд. '+l.room+(l.building?' ('+l.building+')':''):''}${pgNote} · до ${found.s.time.split('–')[1]}`;
     const left=Math.max(0,parseHM(found.s.time.split('–')[1])-nowMin);
     el.count.textContent=fmtDur(left);el.countL.textContent='до конца';
+    const bp=found.s.time.split('–').map(parseHM)[0]+40;
+    const br=document.getElementById('ncBreak');
+    if(nowMin<bp)br.textContent='Перерыв через '+fmtDur(bp-nowMin);
+    else if(nowMin<bp+5)br.textContent='Идёт перерыв';
+    else br.textContent='Перерыв завершён';
   }else{
     card.classList.remove('now');
+    const br=document.getElementById('ncBreak');if(br)br.textContent='';
     const [a]=found.s.time.split('–').map(parseHM);
     const dayDiff=Math.round((new Date(found.day.iso)-new Date(today))/86400000);
     const mins=(dayDiff*1440+a)-nowMin;
