@@ -25,6 +25,21 @@
   --chip:rgba(255,255,255,.055);
   --radius:24px;
 }
+[data-theme="material"]{
+  --bg:#f5f5f5; --text:#202124; --muted:#5f6368; --faint:#80868b;
+  --glass:#ffffff; --glass-strong:#ffffff;
+  --glass-border:rgba(0,0,0,.08); --glass-edge:rgba(255,255,255,.9);
+  --glass-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);
+  --specular:rgba(0,0,0,.03);
+  --blob-op:0; --blob-blend:normal; --grain-op:0;
+  --seg-bg:#e8eaed; --seg-thumb:#d2e3fc;
+  --chip:#f1f3f4; --radius:12px;
+}
+[data-theme="material"] .glass::before{display:none}
+[data-theme="material"] .glass{
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  background:var(--glass);
+}
 [data-theme="light"]{
   --bg:#eef1f8; --text:#0c1322; --muted:rgba(12,19,34,.62); --faint:rgba(12,19,34,.40);
   --glass:linear-gradient(135deg,rgba(var(--accent-rgb),.22),rgba(255,255,255,.55));
@@ -94,6 +109,7 @@ body{
 .accent{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s,border-color .2s;background:linear-gradient(135deg,var(--a),var(--a2))}
 .accent:hover{transform:scale(1.15)}
 .accent.on{border-color:var(--text)}
+.design-btn{flex:1 1 auto;text-align:center;padding:8px 10px;font-size:11.5px}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 .group-btn{
@@ -470,6 +486,13 @@ footer a:hover{color:var(--accent)}
       <button class="accent" style="--a:#fb923c;--a2:#f97316" data-a="#fb923c" data-a2="#f97316" aria-label="Оранжевый"></button>
       <button class="accent" style="--a:#fb7185;--a2:#db2777" data-a="#fb7185" data-a2="#db2777" aria-label="Розовый"></button>
       <button class="accent" style="--a:#22d3ee;--a2:#0891b2" data-a="#22d3ee" data-a2="#0891b2" aria-label="Бирюзовый"></button>
+    </div>
+    <div class="menu-sep"></div>
+    <div class="menu-label">Дизайн</div>
+    <div class="accent-row">
+      <button class="mini-btn design-btn" data-t="dark" title="Liquid glass тёмная">🌟 Liquid dark</button>
+      <button class="mini-btn design-btn" data-t="light" title="Liquid glass светлая">☀️ Liquid light</button>
+      <button class="mini-btn design-btn" data-t="material" title="Material UI">📦 Material</button>
     </div>
   </div>
 </header>
@@ -1467,6 +1490,7 @@ function init(){
   try{const acc=JSON.parse(localStorage.getItem('bargu_accent')||'null');if(acc){const r=parseInt(acc[0].slice(1,3),16),g=parseInt(acc[0].slice(3,5),16),b=parseInt(acc[0].slice(5,7),16);document.documentElement.style.setProperty('--accent',acc[0]);document.documentElement.style.setProperty('--accent2',acc[1]);document.documentElement.style.setProperty('--accent-rgb',`${r},${g},${b}`);document.querySelectorAll('.accent').forEach(x=>x.classList.toggle('on',x.dataset.a===acc[0]));}}catch(_){}
   document.getElementById('menuPanel').addEventListener('click',e=>e.stopPropagation());
   
+  document.querySelectorAll('.design-btn').forEach(b=>b.onclick=e=>{e.stopPropagation();setTheme(b.dataset.t);try{localStorage.setItem('bargu_theme',b.dataset.t);}catch(_){}});
   document.getElementById('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
   const ph=document.getElementById('panelHead');
   const togglePanel=()=>{const p=document.getElementById('officialPanel');p.classList.toggle('open');ph.setAttribute('aria-expanded',p.classList.contains('open'));if(p.classList.contains('open'))setTimeout(()=>submitIframe(true),200);};
