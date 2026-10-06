@@ -120,11 +120,11 @@ body{
 .menu-item:hover{background:var(--chip)}
 .menu-sep{height:1px;background:var(--glass-border);margin:8px 4px}
 .menu-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:2px 0 8px 6px}
-.accent-row{display:flex;gap:8px;padding:6px 10px}
+.accent-row{display:flex;gap:8px;padding:6px 10px;flex-wrap:wrap}
 .accent{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s,border-color .2s;background:linear-gradient(135deg,var(--a),var(--a2))}
 .accent:hover{transform:scale(1.15)}
 .accent.on{border-color:var(--text)}
-.design-btn{flex:1 1 auto;text-align:center;padding:8px 10px;font-size:11.5px}
+.design-btn{flex:1 1 calc(50% - 8px);min-width:100px;text-align:center;padding:8px 10px;font-size:11.5px}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 .group-btn{
@@ -912,10 +912,13 @@ async function updateLive(manual=false,targetWeek=null){
   if(manual){document.getElementById('refreshBtn').classList.add('spinning');setStatus('busy','обновляю…');}
   let got=null;
   try{
-    const listRes=await fetchViaChain(SRC_URL,{method:'GET',timeout:9000});
-    if(listRes){
-      const wl=parseWeekList(listRes.txt);
-      if(wl&&wl.length)state.weeks=[...new Set([...wl,...state.weeks])];
+    const todayWeekForList=mondayOf(minskISO());
+    if(!state.weeks || state.weeks.length<8 || !state.weeks.includes(todayWeekForList)){
+      const listRes=await fetchViaChain(SRC_URL,{method:'GET',timeout:9000});
+      if(listRes){
+        const wl=parseWeekList(listRes.txt);
+        if(wl&&wl.length)state.weeks=[...new Set([...wl,...state.weeks])];
+      }
     }
     const today=minskISO();
     const targets=[...new Set([targetWeek,mondayOf(today),state.weekISO].filter(Boolean))];
@@ -1251,7 +1254,7 @@ function swapAnim(box,dir){
   void box.offsetWidth;
   box.classList.add(dir>0?'swap-r':'swap-l');
 }
-function renderSchedule(dir=0){
+function renderSchedule(dir=0, silent=false){
   const box=document.getElementById('dayContent');
   const sch=state.schedules[state.weekISO];
   if(!sch){
@@ -1307,8 +1310,10 @@ function renderSchedule(dir=0){
   }
   const endT=lastSlot?lastSlot.time.split('–')[1]:'';
   rows+=`<div class="free-time">после ${esc(endT)} — свободно ✨</div>`;
-  box.innerHTML=head+rows;
-  box.querySelectorAll('.slot-row').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation='';});
+  const newHtml=head+rows;
+  if(silent && box.innerHTML===newHtml)return;
+  box.innerHTML=newHtml;
+  if(!silent)box.querySelectorAll('.slot-row').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation='';});
   swapAnim(box,dir);
 }
 
@@ -1421,12 +1426,19 @@ function setTheme(t){
 }
 
 /* ================= specular ================= */
+let specularRAF=false;
 document.addEventListener('pointermove',e=>{
   const card=e.target.closest?.('.glass');
   if(!card)return;
-  const r=card.getBoundingClientRect();
-  card.style.setProperty('--mx',(e.clientX-r.left)+'px');
-  card.style.setProperty('--my',(e.clientY-r.top)+'px');
+  if(specularRAF)return;
+  specularRAF=true;
+  const x=e.clientX,y=e.clientY,c=card;
+  requestAnimationFrame(()=>{
+    const r=c.getBoundingClientRect();
+    c.style.setProperty('--mx',(x-r.left)+'px');
+    c.style.setProperty('--my',(y-r.top)+'px');
+    specularRAF=false;
+  });
 },{passive:true});
 
 /* ================= group switch ================= */
@@ -1527,9 +1539,8 @@ function init(){
   }
   // timers
   setInterval(renderNext,30000);
-  setInterval(()=>{if(state.schedules[state.weekISO])renderSchedule();},60000);
-  setInterval(()=>updateLive(false),30*60*1000);
-  setTimeout(()=>updateLive(false),1500);
+  setInterval(()=>{if(!document.hidden&&state.schedules[state.weekISO])renderSchedule(0,true);},60000);
+  setInterval(()=>{if(!document.hidden)updateLive(false);},240*60*1000);
   // start
   selectGroup(startGroup,{week:h&&h.w?h.w:null,day:h&&h.d?h.d:null}).then(()=>{
     setTimeout(()=>submitIframe(true),1200);
