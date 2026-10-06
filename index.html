@@ -918,7 +918,8 @@ function renderFacTabs(){
 }
 function renderGroupGrid(){
   const box=document.getElementById('groupScroll');
-  const q=(document.getElementById('groupSearch').value||'').toLowerCase().trim();
+  const qRaw=(document.getElementById('groupSearch').value||'').toLowerCase().trim();
+  const q=qRaw.replace(/[\s_-]+/g,'');
   box.innerHTML='';
   let total=0;
   const facs=[...new Set(GROUPS.map(g=>g.faculty))].sort((a,b)=>{
@@ -928,7 +929,7 @@ function renderGroupGrid(){
   for(const f of facs){
     if(pickerFac&&f!==pickerFac)continue;
     const gs=GROUPS.filter(g=>g.faculty===f&&(
-      !q||g.code.toLowerCase().includes(q)||(g.speciality||'').toLowerCase().includes(q)
+      !q||g.code.toLowerCase().replace(/[\s_-]+/g,'').includes(q)||(g.speciality||'').toLowerCase().includes(qRaw)||(g.speciality||'').toLowerCase().replace(/[\s_-]+/g,'').includes(q)
     ));
     if(!gs.length)continue;
     total+=gs.length;
@@ -1079,7 +1080,7 @@ function attachSegDrag(){
   const seg=document.getElementById('daySeg');
   const thumb=document.getElementById('segThumb');
   let pid=null,startX=0,startXPos=0,dragging=false;
-  const metrics=()=>[...seg.querySelectorAll('button')].map(b=>({el:b,left:b.offsetLeft,w:b.offsetWidth}));
+  const metrics=()=>{const sr=seg.getBoundingClientRect();const bl=parseFloat(getComputedStyle(seg).borderLeftWidth)||0;return [...seg.querySelectorAll('button')].map(b=>{const r=b.getBoundingClientRect();return {el:b,left:r.left-sr.left-bl,w:r.width};});};
   const thumbX=()=>{const m=parseFloat((thumb.style.transform.match(/translateX\(([-\d.]+)px\)/)||[])[1]);return isNaN(m)?0:m;};
   seg.addEventListener('pointerdown',e=>{
     if(e.button!==undefined&&e.button>0)return;
@@ -1149,8 +1150,11 @@ function renderDays(){
   function positionThumb(){
     const on=seg.querySelector('button.on');
     if(!on){thumb.style.width='0px';return;}
-    thumb.style.width=on.offsetWidth+'px';
-    thumb.style.transform=`translateX(${on.offsetLeft}px)`;
+    const segRect=seg.getBoundingClientRect();
+    const r=on.getBoundingClientRect();
+    const bl=parseFloat(getComputedStyle(seg).borderLeftWidth)||0;
+    thumb.style.width=r.width+'px';
+    thumb.style.transform=`translateX(${r.left-segRect.left-bl}px)`;
   }
   requestAnimationFrame(positionThumb);
   window._positionThumb=positionThumb;
