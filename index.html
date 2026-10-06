@@ -1079,7 +1079,7 @@ function attachSegDrag(){
   const seg=document.getElementById('daySeg');
   const thumb=document.getElementById('segThumb');
   let pid=null,startX=0,startXPos=0,dragging=false;
-  const metrics=()=>[...seg.querySelectorAll('button')].map(b=>({el:b,left:b.offsetLeft-5,w:b.offsetWidth}));
+  const metrics=()=>[...seg.querySelectorAll('button')].map(b=>({el:b,left:b.offsetLeft,w:b.offsetWidth}));
   const thumbX=()=>{const m=parseFloat((thumb.style.transform.match(/translateX\(([-\d.]+)px\)/)||[])[1]);return isNaN(m)?0:m;};
   seg.addEventListener('pointerdown',e=>{
     if(e.button!==undefined&&e.button>0)return;
@@ -1150,7 +1150,7 @@ function renderDays(){
     const on=seg.querySelector('button.on');
     if(!on){thumb.style.width='0px';return;}
     thumb.style.width=on.offsetWidth+'px';
-    thumb.style.transform=`translateX(${on.offsetLeft-5}px)`;
+    thumb.style.transform=`translateX(${on.offsetLeft}px)`;
   }
   requestAnimationFrame(positionThumb);
   window._positionThumb=positionThumb;
