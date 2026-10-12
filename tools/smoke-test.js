@@ -1,7 +1,10 @@
 // Смоук-тест сайта: рендер в jsdom + проверка, что данные подхватились и обновление работает.
 // jsdom берётся из NODE_PATH (в CI ставится во внешний каталог, чтобы не мусорить в репозитории)
 const { JSDOM, VirtualConsole } = require('jsdom');
-const BASE = 'http://127.0.0.1:8099/';
+// Аргументом можно передать любой адрес: локальный сервер или уже опубликованный сайт.
+//   node tools/smoke-test.js                                  -> http://127.0.0.1:8099/
+//   node tools/smoke-test.js https://zxkittenxd.github.io/barsu-schedule/
+const BASE = (process.argv[2] || 'http://127.0.0.1:8099/').replace(/\/?$/, '/');
 
 const errors = [];
 const vc = new VirtualConsole();
