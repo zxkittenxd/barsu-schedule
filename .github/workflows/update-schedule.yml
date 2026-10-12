@@ -1,0 +1,106 @@
+name: Обновление расписания
+
+# Расписание собирается на стороне сервера, потому что браузер не может запросить
+# rasp.barsu.by напрямую: университет не отдаёт CORS-заголовки и принимает параметры
+# только в POST, а бесплатные CORS-реле нестабильны.
+#
+# Что происходит: по cron запускается tools/scrape.py, он парсит rasp.barsu.by,
+# перезаписывает data/*.json, BOOT-снимок в index.html и data/version.json,
+# затем изменения коммитятся в main. GitHub Pages сам пересобирает сайт.
+# Если данные не изменились — коммита нет и пересборки тоже.
+
+on:
+  schedule:
+    # Время в UTC, Минск = UTC+3. Каждые 3 часа: этого достаточно, чтобы подхватить
+    # и ежедневные замены, и публикацию следующей недели (обычно вечером в пятницу).
+    - cron: '10 */3 * * *'
+  workflow_dispatch: {}          # ручной запуск кнопкой во вкладке Actions
+  push:
+    branches: [main]
+    paths:                       # самопроверка после правок скрапера/воркфлоу
+      - 'tools/scrape.py'
+      - '.github/workflows/update-schedule.yml'
+
+permissions:
+  contents: write                # коммитить обновлённые данные
+  pages: write                   # явно запросить пересборку Pages
+
+concurrency:
+  group: schedule-update         # не запускать два прогона одновременно
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Клонировать репозиторий
+        uses: actions/checkout@v4
+
+      - name: Настроить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Собрать расписание с rasp.barsu.by
+        id: scrape
+        run: |
+          python3 tools/scrape.py --workers 4 --report report.txt
+          echo "changed=$(git status --porcelain -- data index.html | wc -l | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Смоук-тест страницы (рендер в jsdom)
+        if: steps.scrape.outputs.changed != '0'
+        run: |
+          python3 -m http.server 8099 >/tmp/http.log 2>&1 &
+          SRV=$!
+          sleep 2
+          npm install --silent --no-save --prefix /tmp/jsdom jsdom
+          NODE_PATH=/tmp/jsdom/node_modules node tools/smoke-test.js
+          STATUS=$?
+          kill $SRV 2>/dev/null || true
+          exit $STATUS
+
+      - name: Сохранить артефакты, если тест упал
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-debug
+          path: |
+            report.txt
+            data/version.json
+          if-no-files-found: ignore
+
+      - name: Закоммитить и опубликовать
+        if: steps.scrape.outputs.changed != '0'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data index.html
+          {
+            echo "Обновить расписание с rasp.barsu.by"
+            echo
+            echo "Собрано: $(TZ=Europe/Minsk date +'%d.%m.%Y %H:%M') (Минск)"
+            echo
+            sed 's/^/  /' report.txt || true
+          } > /tmp/msg
+          git commit -F /tmp/msg
+          # за 1-3 минуты прогона в main мог кто-то запушить — перестраховываемся
+          git pull --rebase origin main
+          git push
+
+      - name: Запросить пересборку GitHub Pages
+        if: steps.scrape.outputs.changed != '0'
+        continue-on-error: true   # Pages обычно пересобирается от пуша сам; это страховка
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true
+
+      - name: Итог
+        run: |
+          if [ "${{ steps.scrape.outputs.changed }}" = "0" ]; then
+            echo "Изменений нет — расписание уже актуально, коммит не создаётся."
+          else
+            echo "Опубликовано файлов: ${{ steps.scrape.outputs.changed }}"
+          fi
