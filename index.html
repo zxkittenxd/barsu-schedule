@@ -467,9 +467,9 @@ footer a:hover{color:var(--accent)}
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
 /* переключатель режима: группы / преподаватели */
-.mode-seg{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--chip);margin-top:16px}
-.ms-btn{border:0;background:transparent;color:var(--text);opacity:.62;font:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:11px;cursor:pointer;transition:opacity .2s,background .2s}
-.ms-btn.on{opacity:1;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.mode-seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;border:1px solid var(--glass-border);background:var(--chip);margin-top:16px}
+.ms-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:13px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .25s}
+.ms-btn.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(94,124,255,.4)}
 .glink{cursor:pointer;border:0;background:transparent;font:inherit;padding:0}
 .glink:hover{color:var(--accent)}
 </style>
