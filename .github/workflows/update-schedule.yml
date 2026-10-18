@@ -35,10 +35,10 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Клонировать репозиторий
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Настроить Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -62,7 +62,7 @@ jobs:
 
       - name: Сохранить артефакты, если тест упал
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scrape-debug
           path: |
