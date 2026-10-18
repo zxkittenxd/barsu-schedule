@@ -106,8 +106,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const tLessons = ev('(()=>{const s=state.schedules[state.weekISO];if(!s)return 0;' +
                       'return s.days.reduce((n,d)=>n+d.slots.reduce((m,x)=>m+x.lessons.length,0),0);})()');
   check('у преподавателя есть занятия', tLessons > 0, tLessons + ' занятий');
+  const tDay = ev('(()=>{const s=state.schedules[state.weekISO];if(!s)return null;' +
+                  'const d=s.days.find(x=>x.slots.some(y=>y.lessons.length));return d?d.abbr:null;})()');
+  if (tDay) window.eval(`state.dayAbbr=${JSON.stringify(tDay)};renderSchedule(0,true);`);
   check('в карточках — кликабельные группы', /glink/.test(doc.getElementById('dayContent').innerHTML),
-        (txt('dayContent').match(/[А-Я][А-Яа-я]*-?\d+/) || [''])[0]);
+        (txt('dayContent').match(/[А-Я][А-Яа-я]*-?\d+/) || [''])[0] + ' / день: ' + tDay);
   check('hash содержит префикс преподавателя', String(ev('location.hash')).startsWith('#t/'), ev('location.hash'));
   check('опубликованные недели преподавателей непусты', ev('[...PUBLISHED_T].length') > 0,
         ev('[...PUBLISHED_T].slice(0,3).join()'));
