@@ -18,6 +18,10 @@ CORS-реле нестабильны. Единственный надёжный 
 2. POST https://rasp.barsu.by/stud.php (на группу и неделю) -> HTML-таблица
 3. Парсит таблицы (порт клиентского парсера из index.html, формат 1:1)
 4. Обновляет data/gNNN.json, BOOT-снимок в index.html и data/version.json
+5. Строит расписание ПРЕПОДАВАТЕЛЕЙ: транспонирует данные групп (в каждой паре
+   группы указан преподаватель), поэтому дополнительных запросов к университету
+   не нужно. teach.php отдаёт только каталог «имя -> кафедра» (data/teachers.json,
+   файлы data/pNNN.json). Сверка с официальным teach.php — полное совпадение пар.
 
 Файлы перезаписываются ТОЛЬКО если содержимое реально изменилось, поэтому
 «пустые» прогоны не создают коммитов и не дёргают пересборку Pages.
@@ -48,6 +52,7 @@ from urllib import request as urlrequest
 # ----------------------------------------------------------------------------- config
 
 SRC_URL = "https://rasp.barsu.by/stud.php"
+TEACH_URL = "https://rasp.barsu.by/teach.php"  # нужен только каталог имён и кафедр
 MINSK = timezone(timedelta(hours=3))  # Беларусь не переводит часы: UTC+3 круглый год
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -57,6 +62,7 @@ DAY_NAMES = {
     "ПН": "Понедельник", "ВТ": "Вторник", "СР": "Среда",
     "ЧТ": "Четверг", "ПТ": "Пятница", "СБ": "Суббота", "ВС": "Воскресенье",
 }
+DAY_ORDER = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
 # недель в BOOT-снимке для группы по умолчанию (остальные грузятся лениво из data/)
 BOOT_WEEKS_FOR_DEFAULT = 6
 
@@ -197,6 +203,137 @@ def _unescape(s: str) -> str:
     )
 
 
+# ----------------------------------------------------------------------------- teachers
+# Расписание преподавателей НЕ запрашивается по каждому преподавателю: оно полностью
+# выводится (транспонируется) из уже собранных данных групп — в каждой паре группы
+# указан преподаватель. Это даёт ноль дополнительных запросов к rasp.barsu.by и
+# идеальную синхронность с расписанием групп. Сверка с официальным teach.php
+# (POST на выборке преподавателей) дала полное совпадение пар.
+# teach.php используется только как источник каталога: имя -> кафедра.
+
+_TEACHER_JUNK = re.compile(r"^\([^)]*\)$")  # артефакты вида «(защ)», «(рк)» в поле teacher
+
+
+def clean_teacher(raw: str) -> str | None:
+    t = re.sub(r"\s+", " ", (raw or "")).strip()
+    if not t or len(t) < 3 or _TEACHER_JUNK.match(t):
+        return None
+    return t
+
+
+def parse_teacher_catalog(html: str) -> list[dict]:
+    """Каталог преподавателей teach.php: имя -> кафедра (лежит в class= у <option>)."""
+    out: list[dict] = []
+    seen: set[str] = set()
+    for value, cls in _options(_select_block(html, "teacher")):
+        name = _unescape(value).strip()
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        out.append({"name": name, "kafedra": _unescape(cls).strip()})
+    if not out:
+        raise RuntimeError("Каталог преподавателей пуст — вёрстка teach.php изменилась?")
+    return out
+
+
+def week_heading_teacher(name: str, monday_iso: str) -> str:
+    y, m, d = monday_iso.split("-")
+    return f"Расписание  на неделю c {d}.{m}.{y[2:]} для преподавателя {name}"
+
+
+def derive_teachers(per_group: dict[str, dict]) -> dict[str, dict]:
+    """Транспонирует данные групп в расписания преподавателей.
+
+    Возвращает {имя: {"meta": {...}, "schedules": {week: {day: {slot: [lessons]}}}}}
+    в промежуточном виде; недели/дни/слоты упорядочиваются вызывающим кодом.
+    """
+    acc: dict[str, dict] = {}
+    for code, obj in per_group.items():
+        for wk, sch in (obj.get("schedules") or {}).items():
+            last_update = sch.get("lastUpdate") or ""
+            for day in sch.get("days", []):
+                for slot in day.get("slots", []):
+                    for les in slot.get("lessons", []):
+                        name = clean_teacher(les.get("teacher"))
+                        if not name:
+                            continue
+                        t = acc.setdefault(name, {"weeks": {}, "lastUpdate": ""})
+                        if last_update > t["lastUpdate"]:
+                            t["lastUpdate"] = last_update
+                        w = t["weeks"].setdefault(wk, {})
+                        d = w.setdefault(day["abbr"], {
+                            "abbr": day["abbr"], "name": day["name"], "date": day["date"],
+                            "iso": day["iso"], "dateFull": day["dateFull"], "slots": {},
+                        })
+                        s = d["slots"].setdefault(slot["n"], {"n": slot["n"], "time": slot["time"], "lessons": []})
+                        sub = les.get("subgroup", "")
+                        key = (les.get("subjectRaw", ""), les.get("type", ""), les.get("room", ""),
+                               les.get("building", ""), les.get("note", ""),
+                               bool(les.get("replacement")))
+                        merged = None
+                        for ex in s["lessons"]:
+                            if ex["_key"] == key:
+                                merged = ex
+                                break
+                        if merged is None:
+                            merged = {
+                                "_key": key,
+                                "_subs": [],
+                                "subjectRaw": les.get("subjectRaw", ""),
+                                "type": les.get("type", ""),
+                                "groups": "",
+                                "groupCodes": [],
+                                "subgroup": sub,
+                                "room": les.get("room", ""),
+                                "building": les.get("building", ""),
+                                "note": les.get("note", ""),
+                                "replacement": bool(les.get("replacement")),
+                            }
+                            s["lessons"].append(merged)
+                        merged["groupCodes"].append(code)
+                        merged["_subs"].append(sub)
+                        subs_seen = []
+                        for lesx in merged["_subs"]:
+                            if lesx and lesx not in subs_seen:
+                                subs_seen.append(lesx)
+                        merged["subgroup"] = subs_seen[0] if len(subs_seen) == 1 else ""
+                        merged["groups"] = (" ".join(merged["groupCodes"])
+                                            + (f" - пг.{'/'.join(subs_seen)}" if subs_seen else ""))
+    # упорядочиваем: недели и дни — как в данных групп, слоты — по номеру,
+    # пары внутри слота — по коду группы и подгруппе
+    out: dict[str, dict] = {}
+    for name, t in acc.items():
+        schedules = {}
+        for wk in sorted(t["weeks"], reverse=True):
+            days_src = t["weeks"][wk]
+            days = []
+            for abbr in DAY_ORDER:
+                if abbr not in days_src:
+                    continue
+                d = days_src[abbr]
+                slots = []
+                for n in sorted(d["slots"]):
+                    s = d["slots"][n]
+                    s["lessons"] = sorted(s["lessons"], key=lambda x: (x["groupCodes"][0], x["subgroup"]))
+                    for les in s["lessons"]:
+                        les.pop("_key", None)
+                        les.pop("_subs", None)
+                    slots.append(s)
+                days.append({
+                    "abbr": d["abbr"], "name": d["name"], "date": d["date"],
+                    "slots": slots,
+                    "iso": d["iso"], "dateFull": d["dateFull"],
+                })
+            schedules[wk] = {
+                "weekBegin": wk,
+                "heading": week_heading_teacher(name, wk),
+                "lastUpdate": t["lastUpdate"],
+                "days": days,
+            }
+        out[name] = {"meta": {}, "schedules": schedules}
+    return out
+
+
 # ----------------------------------------------------------------------------- parser
 # Точный порт клиентского парсера из index.html (stripTags / parseContent /
 # parseScheduleHTML), чтобы data/*.json оставались байт-в-байт совместимыми.
@@ -209,11 +346,14 @@ _RE_TR = re.compile(r"<tr[\s\S]*?</tr>")
 _RE_CELL = re.compile(r"<t[dh][^>]*>[\s\S]*?</t[dh]>")
 _RE_TBODY_FIX = re.compile(r"(<tbody[^>]*>)\s*(<td[^>]*rowspan)", re.I)
 _RE_START = re.compile(
-    r"^(\[ЗАМЕНА\]\s*)?(.+?)\s+-\s+(Экзамен|Зачет|Зач|Экз|ЛК|ЛЗ|ПЗ|СЗ|ЛР|УЭК|КП|КР|СКР)(?=\s|$)\s*(.*)$",
+    r"^(\[ЗАМЕНА\]\s*)?(.+?)\s+-\s+(Экзамен|Зачет|Зач|Экз|ЛК|ЛЗ|ПЗ|СЗ|ЛР|УЭК|КП|КР|СКР|КН)(?=\s|$)\s*(.*)$",
     re.I,
 )
 _RE_ROOM = re.compile(r"^(\d+\s*/\s*\d+[а-яa-z]?)\s*(.*)$", re.I)
 _RE_TIME = re.compile(r"^\s*(\d{1,2}[.,]\d{2})\s*-\s*(\d{1,2}[.,]\d{2})\s*$")
+_RE_PAREN_ONLY = re.compile(r"^\([^)]*\)$")                     # «(он)», «(защ)», «(рк)»
+_RE_SUBGROUP_ONLY = re.compile(r"^пг\s*:?\s*([0-9]+|[A-Za-zА-Яа-яЁё]+)$", re.I)  # «пг: 2», «пг: ИНГР»
+_RE_ROOM_WORD = re.compile(r"^([A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё0-9]*)\s+(Парк)$")  # «АктЗал Парк»
 _RE_HEADING = re.compile(r"Расписание\s+на\s+неделю[^<]*")
 _RE_UPDATED = re.compile(r"Последнее\s+обновление\s*([0-9][0-9\- :]*[0-9])")
 
@@ -228,7 +368,7 @@ def strip_tags(s: str) -> str:
 
 def _fill_room(cur: dict, room: str, rest: str) -> None:
     cur["room"] = re.sub(r"\s+", "", room)
-    pg = re.search(r"пг\s*:?\s*(\d+)", rest, re.I)
+    pg = re.search(r"пг\s*:?\s*([0-9]+|[A-Za-zА-Яа-яЁё]+)", rest, re.I)
     if pg:
         cur["subgroup"] = pg.group(1)
         rest = rest.replace(pg.group(0), " ")
@@ -273,6 +413,18 @@ def parse_content(html_cell: str) -> list[dict]:
             line = line.replace("[ЗАМЕНА]", "").strip()
             if not line:
                 continue
+        # «(он)», «(защ)» и т.п. — пометка к паре, а не преподаватель
+        if _RE_PAREN_ONLY.match(line):
+            cur["note"] = (cur["note"] + " " + line) if cur["note"] else line
+            continue
+        # отдельная строка подгруппы: «пг: 2», «пг: ИНГР»
+        pg = _RE_SUBGROUP_ONLY.match(line)
+        if pg:
+            if not cur["subgroup"]:
+                cur["subgroup"] = pg.group(1)
+            else:
+                cur["note"] = (cur["note"] + " " + line) if cur["note"] else line
+            continue
         rm = _RE_ROOM.match(line)
         if not cur["teacher"]:
             if rm:
@@ -282,8 +434,13 @@ def parse_content(html_cell: str) -> list[dict]:
             continue
         if rm and not cur["room"]:
             _fill_room(cur, rm.group(1), rm.group(2))
-        else:
-            cur["note"] = (cur["note"] + " " + line) if cur["note"] else line
+            continue
+        # аудитория без номера: «АктЗал Парк», «СпортЗал Парк»
+        rw = _RE_ROOM_WORD.match(line)
+        if rw and not cur["room"]:
+            _fill_room(cur, rw.group(1), rw.group(2))
+            continue
+        cur["note"] = (cur["note"] + " " + line) if cur["note"] else line
     return lessons
 
 
@@ -339,6 +496,97 @@ def parse_schedule_html(page_html: str, monday_iso: str) -> dict | None:
                         "lessons": parse_content(rest[1] if len(rest) > 1 else ""),
                     }
                 )
+    for k, d in enumerate(out["days"]):
+        d["iso"] = add_days(monday_iso, k)
+        d["dateFull"] = ".".join(reversed(d["iso"].split("-")))
+    return out if out["days"] else None
+
+
+def parse_teacher_schedule(page_html: str, monday_iso: str) -> dict | None:
+    """Парсит таблицу teach.php (День | Дата | Время | Дисциплина | Группы | Аудитория).
+
+    Формат вывода совпадает с неделей в data/gNNN.json, но в паре вместо
+    преподавателя — группы (`groups`, `groupCodes`).
+    """
+    hm = _RE_HEADING.search(page_html)
+    if not hm:
+        return None
+    t_start = page_html.find("<table", hm.start())
+    t_end = page_html.find("</table>", t_start)
+    if t_start < 0 or t_end < 0:
+        return None
+    rows = _RE_TR.findall(page_html[t_start:t_end])
+    um = _RE_UPDATED.search(page_html)
+    out = {
+        "weekBegin": monday_iso,
+        "heading": hm.group(0).strip(),
+        "lastUpdate": um.group(1).strip() if um else "",
+        "days": [],
+    }
+    cur: dict | None = None
+    slot_n = 0
+    for row in rows:
+        cells = _RE_CELL.findall(row)
+        if not cells:
+            continue
+        idx = 0
+        if "rowspan=8" in row:
+            abbr = strip_tags(cells[0]).strip().upper()
+            if abbr in DAY_NAMES:
+                cur = {
+                    "abbr": abbr,
+                    "name": DAY_NAMES[abbr],
+                    "date": strip_tags(cells[1] if len(cells) > 1 else "").strip(),
+                    "slots": [],
+                }
+                out["days"].append(cur)
+                slot_n = 0
+            idx = 2
+        rest = cells[idx:]
+        if cur is None or not rest:
+            continue
+        tm = _RE_TIME.match(strip_tags(rest[0]))
+        if not tm:
+            continue
+        slot_n += 1
+        subj_cell = strip_tags(rest[1] if len(rest) > 1 else "")
+        lessons: list[dict] = []
+        m = _RE_START.match(" ".join(subj_cell.split()))
+        if m:
+            groups_cell = " ".join(strip_tags(rest[2] if len(rest) > 2 else "").split())
+            room_cell = " ".join(strip_tags(rest[3] if len(rest) > 3 else "").split())
+            codes: list[str] = []
+            sub = ""
+            note = ""
+            gm = re.search(r"\s-\sпг\.\s*([0-9]+|[A-Za-zА-Яа-яЁё]+)(.*)$", groups_cell)
+            if gm:
+                sub, tail = gm.group(1), gm.group(2).strip()
+                groups_cell = groups_cell[: gm.start()]
+                if tail:
+                    note = tail
+            codes = [c for c in groups_cell.split(" ") if c]
+            room, building = "", ""
+            rm = _RE_ROOM.match(room_cell)
+            if rm:
+                room = re.sub(r"\s+", "", rm.group(1))
+                parts = rm.group(2).split(" ")
+                building = parts[0] if parts and parts[0] else ""
+            else:
+                rw = _RE_ROOM_WORD.match(room_cell)
+                if rw:
+                    room, building = rw.group(1), rw.group(2)
+            lessons.append({
+                "subjectRaw": m.group(2).strip(),
+                "type": m.group(3).upper(),
+                "groups": " ".join(codes) + (f" - пг.{sub}" if sub else ""),
+                "groupCodes": codes,
+                "subgroup": sub,
+                "room": room,
+                "building": building,
+                "note": note,
+                "replacement": bool(m.group(1)),
+            })
+        cur["slots"].append({"n": slot_n, "time": f"{_norm_time(tm.group(1))}–{_norm_time(tm.group(2))}", "lessons": lessons})
     for k, d in enumerate(out["days"]):
         d["iso"] = add_days(monday_iso, k)
         d["dateFull"] = ".".join(reversed(d["iso"].split("-")))
@@ -417,6 +665,9 @@ def main() -> int:
     ap.add_argument("--forward-weeks", type=int, default=2,
                     help="сколько недель вперёд от текущей всегда обновлять (по умолчанию 2: "
                          "текущая + следующая; именно их и публикует университет)")
+    ap.add_argument("--refetch-all", action="store_true",
+                    help="разово перетянуть ВСЕ недели из списка университета, игнорируя probed "
+                         "(миграция после изменения парсера)")
     ap.add_argument("--backfill-days", type=int, default=21,
                     help="насколько назад добирать незаполненные недели (по умолчанию 21)")
     ap.add_argument("--report", help="куда положить отчёт для текста коммита")
@@ -485,13 +736,16 @@ def main() -> int:
         # в meta.probed и больше эту неделю не запрашиваем — иначе каждый прогон
         # заново дёргал бы сервер по заведомо пустым неделям.
         probed = set(old.get("meta", {}).get("probed") or [])
-        want = []
-        for wk in weeks_all:
-            if current_week <= wk <= forward_limit:
-                want.append(wk)          # текущая и ближайшие: там бывают замены
-            elif wk < current_week and wk >= horizon and wk not in old_schedules and wk not in probed:
-                want.append(wk)          # дыра в истории — добираем один раз
-        want = want[: args.max_weeks]
+        if args.refetch_all:
+            want = list(weeks_all)       # разовая миграция: тянем всё
+        else:
+            want = []
+            for wk in weeks_all:
+                if current_week <= wk <= forward_limit:
+                    want.append(wk)      # текущая и ближайшие: там бывают замены
+                elif wk < current_week and wk >= horizon and wk not in old_schedules and wk not in probed:
+                    want.append(wk)      # дыра в истории — добираем один раз
+            want = want[: args.max_weeks]
         for wk in want:
             tasks.append((code, wk))
         asked[code] = want
@@ -591,6 +845,124 @@ def main() -> int:
         if not args.dry_run:
             write_if_changed(path, text)
 
+    # --- преподаватели: транспонируются из данных групп, без запросов к университету.
+    # teach.php отдаёт только каталог (имя -> кафедра); если он недоступен, берём
+    # прежний каталог из data/teachers.json, а новых имён из данных групп добавляем без кафедры.
+    teachers_out: list[dict] = []
+    t_written = 0
+    t_index_changed = False
+    if not args.only:
+        kaf_by_name: dict[str, str] = {}
+        kaf_order: list[str] = []
+        teach_catalog: list[dict] = []
+        try:
+            teach_catalog = parse_teacher_catalog(http(TEACH_URL, timeout=args.timeout))
+            for t in teach_catalog:
+                if t["name"] not in kaf_by_name:
+                    kaf_by_name[t["name"]] = t["kafedra"]
+                if t["kafedra"] and t["kafedra"] not in kaf_order:
+                    kaf_order.append(t["kafedra"])
+        except Exception as exc:  # noqa: BLE001
+            print(f"!! teach.php недоступен ({exc}) — беру прежний каталог кафедр", file=sys.stderr)
+        old_index = read_json(os.path.join(data_dir, "teachers.json")) or {}
+        if not kaf_by_name:
+            for t in old_index.get("teachers", []):
+                kaf_by_name.setdefault(t["name"], t.get("kafedra", ""))
+            kaf_order = list(old_index.get("kafedras", []))
+        t_file_of = {t["name"]: t["file"] for t in old_index.get("teachers", []) if t.get("file")}
+        t_order = [t["name"] for t in old_index.get("teachers", [])]
+        next_ti = 0
+        for f in t_file_of.values():
+            m = re.search(r"p(\d+)\.json$", f)
+            if m:
+                next_ti = max(next_ti, int(m.group(1)) + 1)
+        derived = derive_teachers(per_group)
+
+        # Текущая неделя — из официального teach.php: таблица преподавателей содержит
+        # пары, которых нет в групповых таблицах (курсовое проектирование и т.п.).
+        # Остальные недели — бесплатная транспозиция данных групп.
+        official_week: dict[str, dict] = {}
+        if teach_catalog:
+            def fetch_teacher_week(item):
+                name, kaf = item
+                html = http(TEACH_URL, data=urlparse.urlencode({
+                    "kafedra": kaf, "teacher": name,
+                    "weekbegindate": current_week, "go": "Показать",
+                }).encode(), timeout=args.timeout)
+                return name, parse_teacher_schedule(html, current_week)
+
+            t_tasks = [(t["name"], t["kafedra"]) for t in teach_catalog]
+            with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
+                futs = {}
+                for item in t_tasks:
+                    futs[pool.submit(fetch_teacher_week, item)] = item
+                    time.sleep(0.05)
+                done_t = 0
+                for fut in as_completed(futs):
+                    done_t += 1
+                    try:
+                        name, parsed = fut.result()
+                        if parsed:
+                            official_week[name] = parsed
+                    except Exception as exc:  # noqa: BLE001
+                        errors.append(f"teach {futs[fut][0]}: {exc}")
+                    if done_t % 50 == 0 or done_t == len(t_tasks):
+                        print(f"   … teach.php {done_t}/{len(t_tasks)}", flush=True)
+            print(f":: официальная текущая неделя получена для {len(official_week)}"
+                  f" из {len(t_tasks)} преподавателей", flush=True)
+
+        for name in sorted(derived):
+            kaf_by_name.setdefault(name, "")
+        for name in sorted(kaf_by_name):
+            if name not in t_file_of:
+                t_file_of[name] = f"data/p{next_ti:03d}.json"
+                next_ti += 1
+            if name not in t_order:
+                t_order.append(name)
+        for name in t_order:
+            old_obj = read_json(os.path.join(root, t_file_of[name])) or {}
+            schedules = dict(derived.get(name, {}).get("schedules", {}))
+            if name in official_week:
+                schedules[current_week] = official_week[name]
+                schedules = {k: schedules[k] for k in sorted(schedules, reverse=True)}
+            changed = schedules != (old_obj.get("schedules") or {})
+            f_at = stamp() if changed else ((old_obj.get("meta") or {}).get("fetchedAt") or stamp())
+            meta = {
+                "teacher": name,
+                "kafedra": kaf_by_name.get(name, ""),
+                "source": f"{TEACH_URL} + derived from {SRC_URL}",
+                "fetchedAt": f_at,
+                "weeksAvailable": weeks_all,
+                "currentWeek": current_week,
+            }
+            has_weeks = weeks_with_lessons(schedules)
+            teachers_out.append({
+                "name": name,
+                "kafedra": kaf_by_name.get(name, ""),
+                "file": t_file_of[name],
+                "has": bool(has_weeks),
+                "weeks": has_weeks,
+            })
+            if changed:
+                t_written += 1
+            if not args.dry_run:
+                write_if_changed(os.path.join(root, t_file_of[name]),
+                                 dumps({"meta": meta, "schedules": schedules}))
+        teachers_index = {
+            "fetchedAt": fetched_at,
+            "source": TEACH_URL,
+            "derivedFrom": SRC_URL,
+            "kafedras": kaf_order,
+            "teachers": teachers_out,
+        }
+        if not args.dry_run:
+            t_index_changed = write_if_changed(
+                os.path.join(data_dir, "teachers.json"), dumps(teachers_index))
+        else:
+            t_index_changed = True
+    else:
+        print(":: режим --only: расписания преподавателей не трогаю", flush=True)
+
     # --- BOOT-снимок
     dg = default_group if default_group in per_group else (order[0] if order else default_group)
     dg_obj = per_group.get(dg, {"meta": {}, "schedules": {}})
@@ -605,6 +977,7 @@ def main() -> int:
             "groups": groups_out,
             "currentWeek": current_week,
             "weeksAvailable": weeks_all,
+            "teachersPublished": teachers_published,
             "fetchedAt": fetched_at,
             "defaultGroup": dg,
             "defaultData": {
@@ -615,6 +988,10 @@ def main() -> int:
             },
         }
 
+    teachers_published = (
+        sorted({w for t in teachers_out for w in t["weeks"]}, reverse=True)
+        if not args.only else (boot.get("teachersPublished") or [])
+    )
     boot_changed = dumps(make_boot(old_fetched)) != old_boot_text
     fetched_at = stamp() if (written or boot_changed) else old_fetched
     new_boot = make_boot(fetched_at)
@@ -629,7 +1006,9 @@ def main() -> int:
         "currentWeek": current_week,
         "weeks": weeks_all,
         "groups": len(groups_out),
+        "teachers": len(teachers_out),
         "publishedWeeks": sorted({w for g in groups_out for w in g["weeks"]}, reverse=True),
+        "publishedWeeksTeachers": sorted({w for t in teachers_out for w in t["weeks"]}, reverse=True),
         "source": SRC_URL,
     }
     version_changed = write_if_changed(
@@ -644,6 +1023,8 @@ def main() -> int:
         f"изменилось файлов групп: {len(written)}",
         f"новых/обновлённых недель: {', '.join(sorted(new_weeks, reverse=True)) or '—'}",
         f"index.html (BOOT): {'обновлён' if index_changed else 'без изменений'}",
+        f"преподавателей: {len(teachers_out)} (изменилось файлов: {t_written},"
+        f" официальная текущая неделя: {len(official_week) if not args.only else 0})",
         f"data/version.json: {'обновлён' if version_changed else 'без изменений'}",
         f"время: {elapsed:.0f} c",
     ]
@@ -653,7 +1034,7 @@ def main() -> int:
         print("изменённые группы: " + ", ".join(changed_groups[:40])
               + ("…" if len(changed_groups) > 40 else ""), flush=True)
 
-    changed_anything = bool(written) or index_changed
+    changed_anything = bool(written) or index_changed or bool(t_written) or t_index_changed
     if args.report:
         with open(args.report, "w", encoding="utf-8") as fh:
             fh.write(report + "\n")

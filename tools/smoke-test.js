@@ -97,6 +97,24 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   check(`модальное окно: число групп (${expGroups})`,
         new RegExp(expGroups + ' групп').test(txt('modalFoot')), txt('modalFoot'));
 
+  // --- режим преподавателей: переключение, загрузка, рендер, обратное переключение
+  await new Promise(res => { window.eval("switchMode('t',{force:true})"); setTimeout(res, 4000); });
+  check('режим преподавателя включён', ev('state.mode') === 't', ev('state.mode'));
+  check('каталог преподавателей загружен', ev('TEACHERS.length') > 100, ev('TEACHERS.length') + '');
+  check('преподаватель выбран из каталога', ev('!!TMAP[state.group]') === true, ev('state.group'));
+  check('на неделю преподавателя есть данные', ev('!!state.schedules[state.weekISO]') === true, ev('state.weekISO'));
+  const tLessons = ev('(()=>{const s=state.schedules[state.weekISO];if(!s)return 0;' +
+                      'return s.days.reduce((n,d)=>n+d.slots.reduce((m,x)=>m+x.lessons.length,0),0);})()');
+  check('у преподавателя есть занятия', tLessons > 0, tLessons + ' занятий');
+  check('в карточках — кликабельные группы', /glink/.test(doc.getElementById('dayContent').innerHTML),
+        (txt('dayContent').match(/[А-Я][А-Яа-я]*-?\d+/) || [''])[0]);
+  check('hash содержит префикс преподавателя', String(ev('location.hash')).startsWith('#t/'), ev('location.hash'));
+  check('опубликованные недели преподавателей непусты', ev('[...PUBLISHED_T].length') > 0,
+        ev('[...PUBLISHED_T].slice(0,3).join()'));
+  await new Promise(res => { window.eval("switchMode('g',{force:true})"); setTimeout(res, 2500); });
+  check('возврат в режим групп', ev('state.mode') === 'g' && ev('!!state.schedules[state.weekISO]') === true,
+        ev('state.mode'));
+
   // --- кнопка «обновить»
   doc.getElementById('refreshBtn').click();
   await sleep(2500);
