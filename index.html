@@ -472,6 +472,9 @@ footer a:hover{color:var(--accent)}
 .ms-btn.on{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(94,124,255,.4)}
 .glink{cursor:pointer;border:0;background:transparent;font:inherit;padding:0}
 .glink:hover{color:var(--accent)}
+.tlink{cursor:pointer}
+.tlink:hover{color:var(--accent);border-color:var(--glass-edge)}
+.tlink::after{content:'↗';font-size:10px;opacity:.55;margin-left:2px}
 </style>
 </head>
 <body>
@@ -662,7 +665,7 @@ const DEFAULT_GROUP = BOOT.defaultGroup;
 const SRC_URL = 'https://rasp.barsu.by/stud.php';
 const DAY_NAMES = {ПН:'Понедельник',ВТ:'Вторник',СР:'Среда',ЧТ:'Четверг',ПТ:'Пятница',СБ:'Суббота',ВС:'Воскресенье'};
 const DAY_ORDER = ['ПН','ВТ','СР','ЧТ','ПТ','СБ'];
-const TYPE_NAMES = {ЛК:'лекция',ЛЗ:'лабораторное занятие',ПЗ:'практическое занятие',СЗ:'семинарское занятие',ЛР:'лабораторная работа'};
+const TYPE_NAMES = {ЛК:'лекция',ЛЗ:'лабораторное занятие',ПЗ:'практическое занятие',СЗ:'семинарское занятие',ЛР:'лабораторная работа',СР:'самостоятельная работа',ЭКЗ:'экзамен',Экз:'экзамен',ЗАЧ:'зачёт',Зач:'зачёт',КН:'консультация',КП:'курсовой проект',КР:'контрольная работа',СКР:'самостоятельная работа',УЭК:'учебная экскурсия'};
 const FAC_SHORT = {
   'Инженерный факультет':'Инженерный',
   'Факультет экономики и права':'Экономики и права',
@@ -751,6 +754,25 @@ const PUBLISHED = publishedWeeksGlobal();
    преподавателей собирает tools/scrape.py: текущая неделя — напрямую из
    официального teach.php, остальные — транспозицией данных групп. */
 let TEACHERS=[],TMAP={},TEACH_KAF=[],teachersLoad=null;
+// в расписании группы ФИО может быть записано чуть иначе («Шило О.В» без точки),
+// поэтому для перехода «группа → преподаватель» держим индекс по нормализованному имени
+const TNORM={_m:Object.create(null),
+  norm(n){return String(n||'').toLowerCase().replace(/[\s.\-]+/g,'');},
+  set(n){this._m[this.norm(n)]=n;},
+  get(n){return this._m[this.norm(n)]||null;}};
+function teacherKey(raw){
+  if(!raw)return null;
+  return TMAP[raw]?raw:TNORM.get(raw);
+}
+function openTeacher(raw){
+  const go=()=>{
+    const key=teacherKey(raw);
+    if(!key){toast('🤷','Нет в каталоге преподавателей',raw+' — возможно, ведёт только ИПКиП или уже не работает');return;}
+    switchMode('t',{entity:key,week:state.weekISO,force:true});
+  };
+  if(TEACHERS.length)go();
+  else loadTeachers().then(go,()=>toast('⚠️','Каталог преподавателей недоступен','проверьте соединение'));
+}
 const PUBLISHED_T=new Set(BOOT.teachersPublished||[]);
 function isT(){return state.mode==='t';}
 function activeMap(){return isT()?TMAP:GMAP;}
@@ -761,7 +783,7 @@ function loadTeachers(){
   if(teachersLoad)return teachersLoad;
   teachersLoad=fetchJSON('data/teachers.json').then(v=>{
     TEACHERS=v.teachers||[];TEACH_KAF=v.kafedras||[];TMAP={};
-    TEACHERS.forEach(t=>{TMAP[t.name]=t;});
+    TEACHERS.forEach(t=>{TMAP[t.name]=t;TNORM.set(t.name);});
     PUBLISHED_T.clear();
     TEACHERS.forEach(t=>(t.weeks||[]).forEach(w=>PUBLISHED_T.add(w)));
     return v;
@@ -1355,7 +1377,7 @@ function lessonCard(l){
     (l.groupCodes&&l.groupCodes.length?l.groupCodes:(l.groups?[l.groups]:[])).forEach(gc=>{
       chips.push(`<button class="chip glink" data-g="${esc(gc)}" title="Открыть расписание группы ${esc(prettyGroup(gc))}"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>${esc(prettyGroup(gc))}</button>`);
     });
-  }else if(l.teacher)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(l.teacher)}</span>`);
+  }else if(l.teacher)chips.push(`<button class="chip tlink" data-t="${esc(l.teacher)}" title="Открыть расписание преподавателя ${esc(l.teacher)}"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${esc(l.teacher)}</button>`);
   if(l.room)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1"/></svg>ауд. ${esc(l.room)}${l.building?' · '+esc(l.building):''}</span>`);
   const lang=(l.note||'').match(/англ|нем|кит|фр|исп/i);
   if(lang)chips.push(`<span class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>${esc(lang[0])}</span>`);
@@ -1647,8 +1669,11 @@ function init(){
   const mt=document.getElementById('menuTeachers');
   if(mt)mt.onclick=()=>{document.getElementById('menuPanel').classList.remove('show');switchMode('t',{week:state.weekISO});};
   document.getElementById('dayContent').addEventListener('click',e=>{
-    const g=e.target.closest?e.target.closest('.glink'):null;
-    if(g&&g.dataset.g)switchMode('g',{entity:g.dataset.g,week:state.weekISO,force:true});
+    const cl=el=>e.target.closest?e.target.closest(el):null;
+    const g=cl('.glink');
+    if(g&&g.dataset.g){switchMode('g',{entity:g.dataset.g,week:state.weekISO,force:true});return;}
+    const t=cl('.tlink');
+    if(t&&t.dataset.t)openTeacher(t.dataset.t);
   });
   // events
   document.getElementById('groupBtn').onclick=openModal;

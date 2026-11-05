@@ -97,6 +97,20 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   check(`модальное окно: число групп (${expGroups})`,
         new RegExp(expGroups + ' групп').test(txt('modalFoot')), txt('modalFoot'));
 
+  // --- переход «группа → преподаватель» по клику на ФИО в карточке пары
+  const tLink = doc.querySelector('#dayContent .tlink');
+  if (tLink) {
+    const rawT = tLink.getAttribute('data-t');
+    tLink.click();
+    await sleep(3500);
+    const want = ev('teacherKey(' + JSON.stringify(rawT) + ')');
+    check('клик по ФИО открыл расписание преподавателя',
+          ev('state.mode') === 't' && ev('state.group') === want,
+          ev('state.mode') + ' / ' + ev('state.group') + ' (ожидался ' + want + ')');
+  } else {
+    report.push('ℹ️ в карточках нет ФИО — переход «группа → преподаватель» пропущен');
+  }
+
   // --- режим преподавателей: переключение, загрузка, рендер, обратное переключение
   await new Promise(res => { window.eval("switchMode('t',{force:true})"); setTimeout(res, 4000); });
   check('режим преподавателя включён', ev('state.mode') === 't', ev('state.mode'));
@@ -114,6 +128,27 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   check('hash содержит префикс преподавателя', String(ev('location.hash')).startsWith('#t/'), ev('location.hash'));
   check('опубликованные недели преподавателей непусты', ev('[...PUBLISHED_T].length') > 0,
         ev('[...PUBLISHED_T].slice(0,3).join()'));
+  check('у преподавателя указана кафедра', !!ev('(TMAP[state.group]||{}).kafedra'),
+        ev('(TMAP[state.group]||{}).kafedra'));
+  // официальный фрейм в режиме преподавателя должен вести на teach.php
+  const oForm = doc.getElementById('officialForm');
+  check('официальный фрейм ведёт на teach.php', /teach\.php/.test(oForm.getAttribute('action') || ''),
+        oForm.getAttribute('action') || '—');
+  const formNames = [...oForm.querySelectorAll('input')].map(i => i.getAttribute('name'));
+  check('в форме фрейма есть kafedra и teacher',
+        formNames.includes('kafedra') && formNames.includes('teacher'), formNames.join(','));
+  // клик по чипу группы в карточке пары возвращает в режим групп
+  const gLink = doc.querySelector('#dayContent .glink');
+  const gCode = gLink ? gLink.getAttribute('data-g') : null;
+  if (gCode) {
+    gLink.click();
+    await sleep(3000);
+    check('чип группы переключает в режим групп на эту группу',
+          ev('state.mode') === 'g' && ev('state.group') === gCode,
+          ev('state.mode') + ' / ' + ev('state.group'));
+  } else {
+    report.push('ℹ️ чип группы не найден — переход пропущен');
+  }
   await new Promise(res => { window.eval("switchMode('g',{force:true})"); setTimeout(res, 2500); });
   check('возврат в режим групп', ev('state.mode') === 'g' && ev('!!state.schedules[state.weekISO]') === true,
         ev('state.mode'));
