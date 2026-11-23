@@ -1,10 +1,31 @@
 # Расписание БарГУ
 
+[![Обновление расписания](https://github.com/zxkittenxd/barsu-schedule/actions/workflows/update-schedule.yml/badge.svg?branch=main)](https://github.com/zxkittenxd/barsu-schedule/actions/workflows/update-schedule.yml)
+[![GitHub Pages](https://img.shields.io/badge/сайт-GitHub%20Pages-2ea44f?logo=github)](https://zxkittenxd.github.io/barsu-schedule/)
+[![Стек](https://img.shields.io/badge/стек-vanilla%20JS%20%2B%20Python-3776ab)](#стек)
+
 Расписание занятий **всех групп и преподавателей** Барановичского государственного университета (БарГУ) — один статический сайт с данными с официального [rasp.barsu.by](https://rasp.barsu.by/stud.php).
 
 **🔗 Сайт: https://zxkittenxd.github.io/barsu-schedule/**
 
 Неофициальный студенческий проект. Ни бэкенда, ни сборки: только HTML/CSS/JS, а свежее расписание собирает GitHub Actions.
+
+**157 групп · 254 преподавателя · 5 факультетов · 15 кафедр.** Свежесть снимка — в [`data/version.json`](data/version.json) (поле `fetchedAt`); обновляется автоматически каждые 3 часа.
+
+<details>
+<summary>Содержание</summary>
+
+- [Возможности](#возможности)
+- [Структура репозитория](#структура-репозитория)
+- [Как работают данные](#как-работают-данные)
+- [Hash-ссылки](#hash-ссылки)
+- [Локальный запуск](#локальный-запуск)
+- [Деплой и автообновление](#деплой-и-автообновление)
+- [Ограничения и нюансы](#ограничения-и-нюансы)
+- [Стек](#стек)
+- [Дисклеймер](#дисклеймер)
+
+</details>
 
 ---
 
